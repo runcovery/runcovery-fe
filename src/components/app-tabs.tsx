@@ -56,7 +56,7 @@ export default function AppTabs() {
       <Tabs.Screen
         name="manage"
         options={{
-          title: "관리",
+          title: "사후관리",
           tabBarIcon: ({ color }) => (
             <ManageIcon width={26} height={26} fill={color} />
           ),
@@ -66,7 +66,7 @@ export default function AppTabs() {
       <Tabs.Screen
         name="my"
         options={{
-          title: "마이",
+          title: "마이페이지",
           tabBarIcon: ({ color }) => (
             <MyIcon width={26} height={26} fill={color} />
           ),
