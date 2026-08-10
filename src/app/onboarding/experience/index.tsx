@@ -37,7 +37,7 @@ export default function RunningExperienceScreen() {
     <View className="justify-center flex-1 px-8">
       <GradientScreenLayout offsetY={120}>
         <View className="items-start justify-center flex-1 py-16 w-full">
-          이전 버튼
+          {/* 이전 버튼 */}
           <Pressable
             onPress={() => router.back()}
             className="h-10 w-10 -ml-3"
@@ -50,6 +50,7 @@ export default function RunningExperienceScreen() {
               className="h-full w-full"
             />
           </Pressable>
+
           {/* 타이틀 */}
           <View className="items-start w-full mt-3">
             <TitleSection

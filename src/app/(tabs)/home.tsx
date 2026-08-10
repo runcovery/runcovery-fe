@@ -11,7 +11,7 @@ export default function HomeScreen() {
         <View className="mt-7">
           {/* 타이틀 */}
           <View>
-            <Text className="text-[20px] font-semibold text-black">
+            <Text className="text-[22px] font-semibold text-black">
               00님의 현재 상태입니다.
             </Text>
             <Text className="text-[10px] font-medium text-neutral-300">
@@ -19,7 +19,7 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          {/* 카드 컨텐트 */}
+          {/* 카드 컨텐츠 */}
           <View className="mt-5 gap-5">
             <ConditionOverviewCard />
             <CareTipCard />
