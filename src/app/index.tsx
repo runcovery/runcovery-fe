@@ -1,14 +1,11 @@
 import { router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { styled } from "nativewind";
 import { useEffect } from "react";
 import { Image, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import GradientBackground from "@/components/gradient-background";
+import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 
-const StyledSafeAreaView = styled(SafeAreaView);
 const LOADING_DURATION_MS = 2000;
 
 export default function LandingScreen() {
@@ -25,8 +22,7 @@ export default function LandingScreen() {
   return (
     <View className="flex-1">
       <StatusBar style="dark" hidden={false} />
-      <GradientBackground />
-      <StyledSafeAreaView className="flex-1">
+      <GradientScreenLayout>
         <View className="-translate-y-10 flex-1 items-center justify-center px-6">
           <View className="items-center gap-7">
             <Image
@@ -41,7 +37,7 @@ export default function LandingScreen() {
             />
           </View>
         </View>
-      </StyledSafeAreaView>
+      </GradientScreenLayout>
     </View>
   );
 }

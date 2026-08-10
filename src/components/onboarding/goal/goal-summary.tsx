@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { FlatList, Text, View } from "react-native";
 import Button from "../../../components/ui/Button";
 import TitleSection from "../title-section";
@@ -54,7 +55,7 @@ export default function GoalSummaryScreen() {
           )}
         />
       </View>
-      <Button>시작하기</Button>
+      <Button onPress={() => router.navigate("/home")}>시작하기</Button>
     </View>
   );
 }

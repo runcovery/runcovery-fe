@@ -1,15 +1,11 @@
-import GradientBackground from "@/components/gradient-background";
 import SelectCard from "@/components/onboarding/select-card";
 import TitleSection from "@/components/onboarding/title-section";
+import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 import Button from "@/components/ui/Button";
 import { CardData } from "@/types/onboarding/cardData";
 import { router } from "expo-router";
-import { styled } from "nativewind";
 import { useState } from "react";
 import { Image, Pressable, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-const StyledSafeAreaView = styled(SafeAreaView);
 
 const RUNNING_DATA: CardData[] = [
   {
@@ -39,9 +35,9 @@ export default function RunningExperienceScreen() {
 
   return (
     <View className="justify-center flex-1 px-8">
-      <GradientBackground offsetY={120} />
-      <StyledSafeAreaView className="flex-1">
+      <GradientScreenLayout offsetY={120}>
         <View className="items-start justify-center flex-1 py-16 w-full">
+          이전 버튼
           <Pressable
             onPress={() => router.back()}
             className="h-10 w-10 -ml-3"
@@ -54,12 +50,14 @@ export default function RunningExperienceScreen() {
               className="h-full w-full"
             />
           </Pressable>
+          {/* 타이틀 */}
           <View className="items-start w-full mt-3">
             <TitleSection
               title={"00님에 대해서 자세히 알아볼게요!"}
               subTitle="러닝을 얼마나 해보셨나요?"
             />
           </View>
+          {/* 리스트 */}
           <View className="gap-4 w-full mt-5">
             {RUNNING_DATA.map((item) => (
               <SelectCard
@@ -72,13 +70,14 @@ export default function RunningExperienceScreen() {
               />
             ))}
           </View>
+          {/* 버튼 */}
           <View className="w-full mt-7">
             <Button onPress={() => router.push("/onboarding/goal/setup")}>
               다음
             </Button>
           </View>
         </View>
-      </StyledSafeAreaView>
+      </GradientScreenLayout>
     </View>
   );
 }
