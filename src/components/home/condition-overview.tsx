@@ -1,5 +1,7 @@
 import { router } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
+import OutlienCard from "../shared/outline-card";
+import Label from "../ui/label";
 import AchievementProgress from "./achievement-progress";
 
 // const RenderImg = []
@@ -12,11 +14,8 @@ export default function ConditionOverviewCard() {
       : require("../../../assets/images/home/overview-under-50.png");
 
   return (
-    <View className="border border-primary-500 rounded-[18px] px-5 py-3 bg-white">
-      <View className="bg-primary-500 rounded-lg max-w-18 items-center justify-center py-1">
-        <Text className="text-white text-[10px] font-semibold">미래의 나</Text>
-      </View>
-
+    <OutlienCard>
+      <Label text="미래의 나" bg="bg-primary-500" />
       <View className="flex flex-row justify-between mt-4">
         <View className="gap-2">
           <Text className="text-[18px] font-semibold text-black whitespace-pre-wrap">
@@ -53,6 +52,6 @@ export default function ConditionOverviewCard() {
           </Pressable>
         </View>
       </View>
-    </View>
+    </OutlienCard>
   );
 }

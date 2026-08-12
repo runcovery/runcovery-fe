@@ -1,16 +1,14 @@
 import TitleSection from "@/components/onboarding/title-section";
 import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 import Button from "@/components/ui/Button";
+import Label from "@/components/ui/label";
 import { Image, Text, View } from "react-native";
 
 const ConditionBox = () => {
   return (
     <View className="bg-white rounded-[22px] border w-full mt-3 border-primary-440 shadow-[0_2px_4px_rgba(0,0,0,0.08)] py-5 px-7">
-      <View className="bg-[#298DFF] rounded-lg w-20 py-1 items-center justify-center">
-        <Text className="text-[10px] font-semibold text-white">
-          오늘의 컨디션
-        </Text>
-      </View>
+      <Label text="오늘의 컨디션" bg="bg-[#298DFF]" />
+
       <View className="gap-4 mt-5">
         <CheckItem />
         <CheckItem />
