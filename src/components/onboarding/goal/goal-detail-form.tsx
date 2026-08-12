@@ -26,12 +26,15 @@ export default function GoalDetailFormScreen({
   return (
     <View className="flex-1 justify-between">
       <View>
+        {/* 타이틀 */}
         <View className="mt-3">
           <TitleSection
             title="목표를 입력주세요."
             subTitle="00님이 목표를 집적 설정해주세요!"
           />
         </View>
+
+        {/* 리스트 */}
         <View className="mt-5 gap-6">
           <FormInputField
             label="목표 거리"
@@ -59,6 +62,8 @@ export default function GoalDetailFormScreen({
           />
         </View>
       </View>
+
+      {/* 버튼 */}
       <Button onPress={onNext}>다음</Button>
     </View>
   );

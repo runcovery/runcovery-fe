@@ -31,15 +31,20 @@ export default function GoalSummaryScreen() {
   return (
     <View className="flex-1 justify-between">
       <View>
+        {/* 타이틀 */}
         <View className="mt-3">
           <TitleSection
             title="00님의 미래가 설계되었어요."
             subTitle="선택한 장면에 맞는 미래를 설계했어요."
           />
         </View>
+
+        {/* 카드 프리뷰 */}
         <View className="mt-5">
           <PreviewCard />
         </View>
+
+        {/* 세부 목표 리스트 */}
         <FlatList
           className="mt-8"
           data={GOAL_METRICS}
@@ -55,6 +60,8 @@ export default function GoalSummaryScreen() {
           )}
         />
       </View>
+
+      {/* 버튼 */}
       <Button onPress={() => router.navigate("/home")}>시작하기</Button>
     </View>
   );

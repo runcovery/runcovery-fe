@@ -30,6 +30,7 @@ export default function ChooseStepScreen({
   return (
     <View className="flex-1 justify-between">
       <View>
+        {/* 타이틀 */}
         <View className="items-start w-full mt-3 gap-1">
           <Text className="text-[22px] font-semibold text-black whitespace-pre-wrap">
             00님의 미래 목표를 어떻게 정할까요?
@@ -38,6 +39,8 @@ export default function ChooseStepScreen({
             나에게 맞는 미래 목표를 설정해보고, 시작해보세요!
           </Text>
         </View>
+
+        {/* 리스트 */}
         <View className="gap-4 w-full mt-5">
           {DETAIL_DATA.map((item) => (
             <SelectCard
@@ -49,6 +52,8 @@ export default function ChooseStepScreen({
           ))}
         </View>
       </View>
+
+      {/* 버튼 */}
       <View>
         <Button onPress={onNext}>다음</Button>
       </View>

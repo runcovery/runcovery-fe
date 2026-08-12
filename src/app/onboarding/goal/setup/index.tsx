@@ -18,6 +18,7 @@ export default function GoalSetupScreen() {
               "오늘의 컨디션을 분석하고, 러닝부터 회복까지 \n관리해보세요!"
             }
           />
+
           {/* 센터 캐릭터 */}
           <View className=" items-center w-full">
             <Image

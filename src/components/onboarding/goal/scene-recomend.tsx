@@ -18,15 +18,20 @@ export default function SceneRecomendScreen({
   return (
     <View className="flex-1 justify-between">
       <View>
+        {/* 타이틀 */}
         <View className="mt-3">
           <TitleSection
             title="00님에게 맞는 장면을 찾았어요."
             subTitle="기존에 입력한 정보를 참고해 장면을 찾았어요."
           />
         </View>
+
+        {/* 카드 프리뷰 */}
         <View className="mt-5">
           <PreviewCard />
         </View>
+
+        {/* 장면 추천 */}
         <View className="mt-5">
           <Text className="text-[16px] font-semibold text-black">
             다른 장면도 있어요
@@ -36,6 +41,7 @@ export default function SceneRecomendScreen({
             <OptionCard />
           </View>
         </View>
+        {/* 직접 입력일때 */}
         {selectedId === 2 && (
           <View className="mt-5 gap-3">
             <Text className="text-[16px] font-semibold text-black">
@@ -49,6 +55,8 @@ export default function SceneRecomendScreen({
           </View>
         )}
       </View>
+
+      {/* 버튼 */}
       <View className="gap-4">
         <Button onPress={onNext}>다음</Button>
         {selectedId === 1 && (

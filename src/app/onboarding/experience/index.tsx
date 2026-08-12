@@ -58,6 +58,7 @@ export default function RunningExperienceScreen() {
               subTitle="러닝을 얼마나 해보셨나요?"
             />
           </View>
+
           {/* 리스트 */}
           <View className="gap-4 w-full mt-5">
             {RUNNING_DATA.map((item) => (
@@ -71,6 +72,7 @@ export default function RunningExperienceScreen() {
               />
             ))}
           </View>
+
           {/* 버튼 */}
           <View className="w-full mt-7">
             <Button onPress={() => router.push("/onboarding/goal/setup")}>

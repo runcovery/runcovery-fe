@@ -29,15 +29,20 @@ export default function GoalAdjustScreen({ onNext }: { onNext: () => void }) {
     >
       <View className="flex-1 justify-between gap-6">
         <View>
+          {/* 타이틀 */}
           <View className="mt-3">
             <TitleSection
               title="00님의 목표를 설정했어요."
               subTitle="선택한 장면에 맞는 목표를 찾았어요."
             />
           </View>
+
+          {/* 카드 프리뷰 */}
           <View className="mt-5">
             <PreviewCard />
           </View>
+
+          {/* 리스트 폼 */}
           <View className="mt-5">
             <Text className="text-[16px] font-semibold text-black">
               목표 조정이 가능해요
@@ -70,6 +75,8 @@ export default function GoalAdjustScreen({ onNext }: { onNext: () => void }) {
             </View>
           </View>
         </View>
+
+        {/* 버튼 */}
         <View className="mt-7">
           <Button onPress={onNext}>다음</Button>
         </View>
