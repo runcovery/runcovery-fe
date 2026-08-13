@@ -2,6 +2,7 @@ import TitleSection from "@/components/onboarding/title-section";
 import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 import Button from "@/components/ui/Button";
 import Label from "@/components/ui/label";
+import { router } from "expo-router";
 import { Image, Text, View } from "react-native";
 
 const ConditionBox = () => {
@@ -36,21 +37,25 @@ const CheckItem = () => {
 export default function ConditionScreen() {
   return (
     <View className="flex-1 justify-center">
-      <GradientScreenLayout offsetY={120}>
-        <Text className="text-[16px]  font-semibold text-black w-full text-center">
-          내 컨디션
-        </Text>
+      <GradientScreenLayout offsetY={120} edges={["left", "right"]}>
         <View className="items-start justify-between flex-1 py-16 w-full px-8">
-          <View>
-            <View>
-              <TitleSection
-                title="오늘의 컨디션이에요!"
-                subTitle="어제의 내 컨디션이에요."
-              />
+          <View className="w-full">
+            <Text className="text-[16px] font-semibold text-black w-full text-center">
+              내 컨디션
+            </Text>
+            <View className="mt-3 gap-3">
+              <View>
+                <TitleSection
+                  title="오늘의 컨디션이에요!"
+                  subTitle="어제의 내 컨디션이에요."
+                />
+              </View>
+              <ConditionBox />
             </View>
-            <ConditionBox />
           </View>
-          <Button>컨디션 확인하기</Button>
+          <Button onPress={() => router.push("/condition-check")}>
+            컨디션 확인하기
+          </Button>
         </View>
       </GradientScreenLayout>
     </View>

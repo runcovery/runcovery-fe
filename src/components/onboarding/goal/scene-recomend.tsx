@@ -37,8 +37,8 @@ export default function SceneRecomendScreen({
             다른 장면도 있어요
           </Text>
           <View className="gap-3 mt-3">
-            <OptionCard />
-            <OptionCard />
+            <OptionCard content="크루와 나란히 달리며 쳐지지 않는 나" />
+            <OptionCard content="완주 메달을 목에 걸고 결승선을 통과하는 나" />
           </View>
         </View>
         {/* 직접 입력일때 */}

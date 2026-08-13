@@ -7,12 +7,12 @@ import { Text, View } from "react-native";
 export default function MissionScreen() {
   return (
     <View className="flex-1 justify-center">
-      <GradientScreenLayout offsetY={120}>
-        <Text className="text-[16px] font-semibold text-black w-full text-center">
-          미션
-        </Text>
+      <GradientScreenLayout offsetY={120} edges={["left", "right"]}>
         <View className="items-start flex-1 py-16 w-full px-8">
-          <View>
+          <Text className="text-[16px] font-semibold text-black w-full text-center">
+            미션
+          </Text>
+          <View className="mt-3">
             <View className="w-full gap-1">
               <Text className="text-[18px] font-semibold text-black whitespace-pre-wrap">
                 00님의 목표와 현재 상황을 {"\n"}고려하여 러닝 플랜을 만들었어요!
