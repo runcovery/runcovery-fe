@@ -27,9 +27,11 @@ const CheckItem = () => {
         className="*w-7 h-7"
         resizeMode="contain"
       />
-      <Text className="text-[12px] font-medium text-black h-9 w-67.5 justify-center whitespace-pre-wrap">
-        수면 h시간 mm분, 충분
-      </Text>
+      <View className="h-9.5 w-67.5 justify-center">
+        <Text className="text-[12px] font-medium text-black whitespace-pre-wrap">
+          수면 h시간 mm분, 충분
+        </Text>
+      </View>
     </View>
   );
 };

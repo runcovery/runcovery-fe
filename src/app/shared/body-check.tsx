@@ -1,8 +1,6 @@
-import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 import Button from "@/components/ui/Button";
-import { router } from "expo-router";
 import { useState } from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Svg, { Ellipse, Path, Polygon } from "react-native-svg";
 
 const DEFAULT_COLOR = "#DCDDDF";
@@ -295,51 +293,30 @@ export default function BodyCheckScreen() {
   };
 
   return (
-    <View className="flex-1 justify-between">
-      <GradientScreenLayout offsetY={120} edges={["left", "right", "bottom"]}>
-        <View className="items-start justify-between flex-1 py-16 w-full px-8">
-          <View className="gap-3">
-            <View className="flex flex-row items-center">
-              <Pressable
-                onPress={() => router.back()}
-                className="h-10 w-10 -ml-3"
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel="뒤로 가기"
-              >
-                <Image
-                  source={require("../../../assets/images/shared/prev.png")}
-                  className="h-full w-full"
-                />
-              </Pressable>
-              <Text className="text-[16px] font-semibold text-black ml-32">
-                내 컨디션
-              </Text>
-            </View>
-            <Text className="text-[20px] font-semibold text-neutral-950">
-              러닝 중 불편하거나 아픈 부위가 있었나요?
-            </Text>
-          </View>
+    <View className="flex-1 justify-between w-full">
+      <View>
+        <Text className="text-[20px] font-semibold text-neutral-950 mt-3">
+          러닝 중 불편하거나 아픈 부위가 있었나요?
+        </Text>
 
-          <View className="h-120 w-full flex-row items-center justify-between">
-            <BodyFigure
-              side="front"
-              selectedParts={selectedParts}
-              onToggle={togglePart}
-            />
-            <BodyFigure
-              side="back"
-              selectedParts={selectedParts}
-              onToggle={togglePart}
-            />
-          </View>
-
-          <View className="gap-4 w-full">
-            <Button>다음</Button>
-            <Button isWhite={true}>없었어요</Button>
-          </View>
+        <View className="h-120 w-full flex-row items-center justify-between mt-30">
+          <BodyFigure
+            side="front"
+            selectedParts={selectedParts}
+            onToggle={togglePart}
+          />
+          <BodyFigure
+            side="back"
+            selectedParts={selectedParts}
+            onToggle={togglePart}
+          />
         </View>
-      </GradientScreenLayout>
+      </View>
+
+      <View className="gap-4 w-full">
+        <Button>다음</Button>
+        <Button isWhite={true}>없었어요</Button>
+      </View>
     </View>
   );
 }
