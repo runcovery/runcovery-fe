@@ -1,42 +1,43 @@
-import Button from "@/components/ui/Button";
-import { LinearGradient } from "expo-linear-gradient";
-import { Image, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import { Image, View } from "react-native";
 
-export default function HomeScreen() {
+import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
+
+const LOADING_DURATION_MS = 2000;
+
+export default function LandingScreen() {
+  useEffect(() => {
+    void SplashScreen.hideAsync();
+
+    const navigationTimer = setTimeout(() => {
+      router.replace("/onboarding");
+    }, LOADING_DURATION_MS);
+
+    return () => clearTimeout(navigationTimer);
+  }, []);
+
   return (
     <View className="flex-1">
-      <LinearGradient
-        pointerEvents="none"
-        colors={[
-          "rgba(167, 187, 251, 0.287)",
-          "rgba(163, 125, 245, 0.245)",
-          "rgba(112, 125, 242, 0.7)",
-        ]}
-        locations={[0.3211, 0.5551, 0.8389]}
-        start={{ x: 0.2, y: 0 }}
-        end={{ x: 0.8, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <SafeAreaView className="flex-1 items-center justify-center">
-        <View
-          className="items-center"
-          style={{ transform: [{ translateY: -40 }] }}
-        >
-          <Image
-            source={require("../../assets/images/logo.png")}
-            className="h-[152px] w-[190px]"
-            resizeMode="contain"
-          />
-
-          <Image
-            source={require("@/assets/images/logo-text.png")}
-            className="w-37.5 h-6.75"
-          />
-
-          <Button isMid={false}>시작하기</Button>
+      <StatusBar style="dark" hidden={false} />
+      <GradientScreenLayout>
+        <View className="-translate-y-10 flex-1 items-center justify-center px-6">
+          <View className="items-center gap-7">
+            <Image
+              source={require("@/assets/images/logo.png")}
+              className="h-38 w-47.5"
+              resizeMode="contain"
+            />
+            <Image
+              source={require("@/assets/images/logo-text.png")}
+              className="h-6.75 w-37.5"
+              resizeMode="contain"
+            />
+          </View>
         </View>
-      </SafeAreaView>
+      </GradientScreenLayout>
     </View>
   );
 }

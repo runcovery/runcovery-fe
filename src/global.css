@@ -9,10 +9,15 @@
 
   --color-primary-50: #f3f2fd;
   --color-primary-110: #e2ddfb;
+  --color-primary-160: #d4cef9;
   --color-primary-180: #d0c8f9;
+  --color-primary-220: #c5bbf8;
   --color-primary-240: #beb3f7;
+  --color-primary-280: #b5a8f6;
   --color-primary-310: #ab9ef6;
+  --color-primary-330: #a495f6;
   --color-primary-370: #9988f5;
+  --color-primary-390: #9482f5;
   --color-primary-440: #8571f5;
   --color-primary-500: #725af5;
   --color-primary-560: #5032f3;
@@ -37,13 +42,23 @@
 
   --color-neutral-50: #fafafa;
   --color-neutral-100: #dcdcdd;
+  --color-neutral-110: #d3d4d5;
+  --color-neutral-180: #acafb2;
   --color-neutral-200: #9fa3a8;
+  --color-neutral-240: #868b92;
   --color-neutral-300: #676d76;
+  --color-neutral-310: #646a72;
+  --color-neutral-370: #464b52;
   --color-neutral-400: #393e44;
+  --color-neutral-440: #2b2e33;
   --color-neutral-500: #16191d;
+  --color-neutral-580: #15171a;
   --color-neutral-600: #151719;
+  --color-neutral-650: #131518;
   --color-neutral-700: #121316;
+  --color-neutral-730: #111315;
   --color-neutral-800: #0e1012;
+  --color-neutral-880: #0c0d0f;
   --color-neutral-900: #0b0c0e;
   --color-neutral-950: #090a0b;
 
@@ -66,7 +81,10 @@
   --color-success-500: #10b981;
 
   --color-white: #ffffff;
+  --color-black: #000000;
   --color-error: #ff2d2d;
+  --color-character: #ff7cd1;
+  --color-character-2: #99ff77;
 
   --text-display-1: 84px;
   --text-display-1--line-height: 1.4;
@@ -156,10 +174,13 @@
 
 :root {
   --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
+    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono,
+    Courier New, monospace;
+  --font-rounded:
+    "SF Pro Rounded", "Hiragino Maru Gothic ProN", Meiryo, "MS PGothic",
+    sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
 }
