@@ -5,7 +5,6 @@ import HomeIcon from "@/assets/images/tabIcons/home.svg";
 import ManageIcon from "@/assets/images/tabIcons/manage.svg";
 import MissionIcon from "@/assets/images/tabIcons/mission.svg";
 import MyIcon from "@/assets/images/tabIcons/my.svg";
-import { Colors } from "@/constants/theme";
 import { Tabs } from "expo-router";
 
 const DEFAULT_ICON_COLOR = "#9FA3A8";
@@ -13,7 +12,6 @@ const SELECTED_ICON_COLOR = "#725AF5";
 
 export default function AppTabs() {
   const scheme = useColorScheme();
-  const colors = Colors[scheme === "unspecified" ? "light" : scheme];
 
   return (
     <Tabs
@@ -56,7 +54,7 @@ export default function AppTabs() {
       <Tabs.Screen
         name="manage"
         options={{
-          title: "사후관리",
+          title: "사후 관리",
           tabBarIcon: ({ color }) => (
             <ManageIcon width={26} height={26} fill={color} />
           ),

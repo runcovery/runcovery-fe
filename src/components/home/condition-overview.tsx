@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
-import OutlienCard from "../shared/outline-card";
+import OutlineCard from "../shared/outline-card";
 import Label from "../ui/label";
 import AchievementProgress from "./achievement-progress";
 
@@ -14,10 +14,10 @@ export default function ConditionOverviewCard() {
       : require("../../../assets/images/home/overview-under-50.png");
 
   return (
-    <OutlienCard>
+    <OutlineCard>
       <Label text="미래의 나" bg="bg-primary-500" />
-      <View className="flex flex-row justify-between mt-4">
-        <View className="gap-2">
+      <View className="flex-row justify-between gap-3 mt-4">
+        <View className="flex-1 min-w-0 gap-2">
           <Text className="text-[18px] font-semibold text-black whitespace-pre-wrap">
             16층을 걸어도 지치지 {"\n"}않는 나 💪
           </Text>
@@ -30,11 +30,11 @@ export default function ConditionOverviewCard() {
                 ? require("../../../assets/images/home/overview-100.png")
                 : renderImg
             }
-            className="w-50 h-40 mt-4"
+            className="w-full max-w-50 h-40 mt-4"
             resizeMode="contain"
           />
         </View>
-        <View className="items-end">
+        <View className="shrink-0 items-end">
           <AchievementProgress progress={progress} />
           <Text className="text-[16px] font-bold text-neutral-300 mt-5">
             26°C
@@ -52,6 +52,6 @@ export default function ConditionOverviewCard() {
           </Pressable>
         </View>
       </View>
-    </OutlienCard>
+    </OutlineCard>
   );
 }

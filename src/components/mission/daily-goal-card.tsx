@@ -1,5 +1,5 @@
 import { Image, Text, View } from "react-native";
-import OutlienCard from "../shared/outline-card";
+import OutlineCard from "../shared/outline-card";
 import Label from "../ui/label";
 
 const GoalItem = () => {
@@ -23,7 +23,7 @@ export default function DailyGoalCard() {
         일일 목표
       </Text>
       <View className="mt-3">
-        <OutlienCard py="py-5">
+        <OutlineCard py="py-5">
           <Label text="일일 미션" bg="bg-secondary-400" />
           {/* <Text className="py-10 text-[14px] font-medium text-center text-black whitespace-pre-wrap">
             오늘의 미션을 받으려면 컨디션 체크를{"\n"} 받아야해요.
@@ -35,7 +35,7 @@ export default function DailyGoalCard() {
             <GoalItem />
             <GoalItem />
           </View>
-        </OutlienCard>
+        </OutlineCard>
       </View>
     </View>
   );

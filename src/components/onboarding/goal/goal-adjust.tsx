@@ -25,6 +25,7 @@ export default function GoalAdjustScreen({ onNext }: { onNext: () => void }) {
       className="flex-1"
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
       showsVerticalScrollIndicator={false}
     >
       <View className="flex-1 justify-between gap-6">

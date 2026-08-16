@@ -1,16 +1,18 @@
-import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
-import { router } from "expo-router";
+import { BodyCheckStep, BodyPartId } from "@/components/body-check";
+import TitleSection from "@/components/onboarding/title-section";
+import StepScreenLayout from "@/components/shared/step-screen-layout";
+import Button from "@/components/ui/Button";
+import OptionCard from "@/components/ui/option-card";
 import { useState } from "react";
-import { Image, Pressable, Text, View } from "react-native";
-import LoadigScreen from "./shared/loading";
-// import BodyCheckScreen from "./shared/body-check";
+import { ScrollView, View } from "react-native";
+import LoadingScreen from "../components/shared/loading";
 
-type checkType = "body" | "sleep";
+type StepType = "body" | "sleep" | "pain" | "loading";
 
 const CHECK_DATA = {
   body: {
-    title: "지금 00님의 몸상태는 어떤가요?",
-    subTitle: "미션 부여 전에 몸상태를 확인할게요.",
+    title: "지금 00님의 몸 상태는 어떤가요?",
+    subTitle: "미션 부여 전에 몸 상태를 확인할게요.",
     list: [
       { id: 1, content: "완전 방전이에요." },
       { id: 2, content: "적당히 지쳤어요." },
@@ -29,30 +31,31 @@ const CHECK_DATA = {
 } as const;
 
 export default function ConditionCheckScreen() {
-  const [step, setStep] = useState<checkType>("body");
+  const [step, setStep] = useState<StepType>("body");
+  const [selectedBodyParts, setSelectedBodyParts] = useState<BodyPartId[]>([]);
+
+  const isCheck = step !== "pain" && step !== "loading";
+
+  const handleBodyCheckNext = (parts: BodyPartId[]) => {
+    setSelectedBodyParts(parts);
+    setStep("loading");
+  };
 
   return (
-    <View className="flex-1 justify-between">
-      <GradientScreenLayout offsetY={120} edges={["left", "right", "bottom"]}>
-        <View className="items-start justify-start flex-1 py-16 w-full px-8">
-          <View className="flex flex-row items-center">
-            <Pressable
-              onPress={() => router.back()}
-              className="h-10 w-10 -ml-3"
-              hitSlop={8}
-              accessibilityRole="button"
-              accessibilityLabel="뒤로 가기"
-            >
-              <Image
-                source={require("../../assets/images/shared/prev.png")}
-                className="h-full w-full"
-              />
-            </Pressable>
-            <Text className="text-[16px] font-semibold text-black ml-32">
-              내 컨디션
-            </Text>
-          </View>
-          {/* <View className="mt-3 w-full justify-between flex-1">
+    <View className="flex-1">
+      <StepScreenLayout
+        title="내 컨디션"
+        edges={["left", "right", "bottom"]}
+      >
+        {isCheck && (
+          <ScrollView
+            className="mt-3 w-full flex-1"
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "space-between",
+            }}
+            showsVerticalScrollIndicator={false}
+          >
             <View>
               <TitleSection
                 title={CHECK_DATA[step].title}
@@ -61,7 +64,11 @@ export default function ConditionCheckScreen() {
 
               <View className="gap-9 mt-7">
                 {CHECK_DATA[step].list.map((item) => (
-                  <OptionCard key={item.id} py="py-6" content={item.content} />
+                  <OptionCard
+                    key={item.id}
+                    py="py-6"
+                    content={item.content}
+                  />
                 ))}
               </View>
             </View>
@@ -70,21 +77,29 @@ export default function ConditionCheckScreen() {
               <Button
                 onPress={() => {
                   if (step === "body") setStep("sleep");
-                  else router.push("/shared/body-check");
+                  else setStep("pain");
                 }}
               >
                 다음
               </Button>
             </View>
-          </View> */}
-          {/* <BodyCheckScreen /> */}
-          <LoadigScreen
+          </ScrollView>
+        )}
+        {step === "pain" && (
+          <BodyCheckStep
+            selectedParts={selectedBodyParts}
+            onChange={setSelectedBodyParts}
+            onNext={handleBodyCheckNext}
+          />
+        )}
+        {step === "loading" && (
+          <LoadingScreen
             title="컨디션을 분석하고 있어요."
             subTitle="잠시만 기다려주시면 맞춤 리포트가 완성돼요."
             text="건강 데이터를 수집하는 중.."
           />
-        </View>
-      </GradientScreenLayout>
+        )}
+      </StepScreenLayout>
     </View>
   );
 }

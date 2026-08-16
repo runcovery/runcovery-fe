@@ -2,11 +2,10 @@ import ChooseStepScreen from "@/components/onboarding/goal/choose-step";
 import GoalAdjustScreen from "@/components/onboarding/goal/goal-adjust";
 import GoalDetailFormScreen from "@/components/onboarding/goal/goal-detail-form";
 import GoalSummaryScreen from "@/components/onboarding/goal/goal-summary";
-import SceneRecomendScreen from "@/components/onboarding/goal/scene-recomend";
-import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
-import { router } from "expo-router";
+import SceneRecommendScreen from "@/components/onboarding/goal/scene-recommend";
+import StepScreenLayout from "@/components/shared/step-screen-layout";
 import { ReactNode, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 
 type DetailStep = "Scene" | "Adjust" | "Form" | "Summary" | "Choose";
 
@@ -28,7 +27,7 @@ export default function GoalDetailScreen() {
     Form: <GoalDetailFormScreen onNext={() => setStep("Scene")} />,
 
     Scene: (
-      <SceneRecomendScreen
+      <SceneRecommendScreen
         selectedId={selectedId}
         onNext={() => setStep(selectedId === 1 ? "Adjust" : "Summary")}
       />
@@ -40,27 +39,16 @@ export default function GoalDetailScreen() {
   };
 
   return (
-    <View className="justify-center flex-1 px-8">
-      <GradientScreenLayout offsetY={120}>
-        <View className="flex-1 py-16 w-full">
-          {/* 이전 버튼 */}
-          <Pressable
-            onPress={() => router.back()}
-            className="h-10 w-10 -ml-3"
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel="뒤로 가기"
-          >
-            <Image
-              source={require("../../../../../assets/images/shared/prev.png")}
-              className="h-full w-full"
-            />
-          </Pressable>
-
+    <KeyboardAvoidingView
+      className="flex-1"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <StepScreenLayout>
+        <View className="flex-1 w-full">
           {/* 스텝 렌더링 */}
           {stepComponents[step]}
         </View>
-      </GradientScreenLayout>
-    </View>
+      </StepScreenLayout>
+    </KeyboardAvoidingView>
   );
 }

@@ -1,15 +1,29 @@
-import { Image, View } from "react-native";
+import { Image, useWindowDimensions, View } from "react-native";
 
 export default function CharacterScene() {
+  const { width } = useWindowDimensions();
+  const scale = Math.min(1, (width - 64) / 347);
+
   return (
-    <View className="h-74.5 mt-30 justify-end w-full items-end pr-8">
+    <View
+      className="mt-8 justify-end w-full items-end"
+      style={{ height: 298 * scale, paddingRight: 32 * scale }}
+    >
       <Image
         source={require("../../../assets/images/character/green-cat.png")}
-        className="w-86.75 h-86.5 absolute left-4 -top-10"
+        className="absolute"
+        style={{
+          width: 347 * scale,
+          height: 346 * scale,
+          left: -44 * scale,
+          top: -40 * scale,
+        }}
+        resizeMode="contain"
       />
       <Image
         source={require("../../../assets/images/character/lying-puple-cat-boarding.png")}
-        className="w-32.25 h-19.5"
+        style={{ width: 129 * scale, height: 78 * scale }}
+        resizeMode="contain"
       />
     </View>
   );

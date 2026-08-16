@@ -2,13 +2,21 @@ import DailyGoalCard from "@/components/mission/daily-goal-card";
 import WeeklyGoalCard from "@/components/mission/weekly-goal-card";
 import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 import Button from "@/components/ui/Button";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 export default function MissionScreen() {
   return (
     <View className="flex-1 justify-center">
       <GradientScreenLayout offsetY={120} edges={["left", "right"]}>
-        <View className="items-start flex-1 py-16 w-full px-8">
+        <ScrollView
+          className="flex-1 w-full"
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: 32,
+            paddingVertical: 64,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
           <Text className="text-[16px] font-semibold text-black w-full text-center">
             미션
           </Text>
@@ -18,7 +26,7 @@ export default function MissionScreen() {
                 00님의 목표와 현재 상황을 {"\n"}고려하여 러닝 플랜을 만들었어요!
               </Text>
               <Text className="text-neutral-300 will-change-variable text-[14px] font-medium whitespace-pre-wrap">
-                미션 부여 전에 몸상태를 확인할게요.
+                미션 부여 전에 몸 상태를 확인할게요.
               </Text>
             </View>
           </View>
@@ -29,7 +37,7 @@ export default function MissionScreen() {
           <View className="mt-9 w-full">
             <Button>컨디션 체크하기</Button>
           </View>
-        </View>
+        </ScrollView>
       </GradientScreenLayout>
     </View>
   );

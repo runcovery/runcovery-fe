@@ -2,8 +2,8 @@ import { Text, View } from "react-native";
 
 export default function CareCenterCard() {
   return (
-    <View className="w-40 h-40 border rounded-lg relative">
-      <View className="gap-2 absolute bottom-4 left-4">
+    <View className="flex-1 min-w-0 aspect-square border rounded-lg relative">
+      <View className="gap-1 absolute bottom-3 inset-x-3">
         <Text className="text-[16px] font-semibold text-white">
           웰니스 서울
         </Text>

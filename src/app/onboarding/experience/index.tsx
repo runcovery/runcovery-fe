@@ -1,17 +1,17 @@
 import SelectCard from "@/components/onboarding/select-card";
 import TitleSection from "@/components/onboarding/title-section";
-import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
+import StepScreenLayout from "@/components/shared/step-screen-layout";
 import Button from "@/components/ui/Button";
 import { CardData } from "@/types/onboarding/cardData";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 const RUNNING_DATA: CardData[] = [
   {
     id: 1,
-    title: "거의 안해봤어요.",
-    content: "한 번도 뛰어본 적이 없거나 \n한두 번 뛰어본 정도에요.",
+    title: "거의 안 해봤어요.",
+    content: "한 번도 뛰어본 적이 없거나 \n한두 번 뛰어본 정도예요.",
   },
   {
     id: 2,
@@ -34,53 +34,45 @@ export default function RunningExperienceScreen() {
   const [selectedId, setSelectedId] = useState(0);
 
   return (
-    <View className="justify-center flex-1 px-8">
-      <GradientScreenLayout offsetY={120}>
-        <View className="items-start justify-center flex-1 py-16 w-full">
-          {/* 이전 버튼 */}
-          <Pressable
-            onPress={() => router.back()}
-            className="h-10 w-10 -ml-3"
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel="뒤로 가기"
-          >
-            <Image
-              source={require("../../../../assets/images/shared/prev.png")}
-              className="h-full w-full"
-            />
-          </Pressable>
-
-          {/* 타이틀 */}
-          <View className="items-start w-full mt-3">
-            <TitleSection
-              title={"00님에 대해서 자세히 알아볼게요!"}
-              subTitle="러닝을 얼마나 해보셨나요?"
-            />
-          </View>
-
-          {/* 리스트 */}
-          <View className="gap-4 w-full mt-5">
-            {RUNNING_DATA.map((item) => (
-              <SelectCard
-                key={item.id}
-                item={item}
-                onPress={() =>
-                  setSelectedId(selectedId === item.id ? 0 : item.id)
-                }
-                selected={selectedId === item.id}
+    <View className="flex-1">
+      <StepScreenLayout>
+        <ScrollView
+          className="flex-1 w-full"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="items-start justify-center flex-1 w-full">
+            {/* 타이틀 */}
+            <View className="items-start w-full mt-3">
+              <TitleSection
+                title={"00님에 대해서 자세히 알아볼게요!"}
+                subTitle="러닝을 얼마나 해보셨나요?"
               />
-            ))}
-          </View>
+            </View>
 
-          {/* 버튼 */}
-          <View className="w-full mt-7">
-            <Button onPress={() => router.push("/onboarding/goal/setup")}>
-              다음
-            </Button>
+            {/* 리스트 */}
+            <View className="gap-4 w-full mt-5">
+              {RUNNING_DATA.map((item) => (
+                <SelectCard
+                  key={item.id}
+                  item={item}
+                  onPress={() =>
+                    setSelectedId(selectedId === item.id ? 0 : item.id)
+                  }
+                  selected={selectedId === item.id}
+                />
+              ))}
+            </View>
+
+            {/* 버튼 */}
+            <View className="w-full mt-7">
+              <Button onPress={() => router.push("/onboarding/goal/setup")}>
+                다음
+              </Button>
+            </View>
           </View>
-        </View>
-      </GradientScreenLayout>
+        </ScrollView>
+      </StepScreenLayout>
     </View>
   );
 }

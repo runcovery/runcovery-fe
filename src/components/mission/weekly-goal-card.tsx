@@ -1,5 +1,5 @@
 import { Image, Text, View } from "react-native";
-import OutlienCard from "../shared/outline-card";
+import OutlineCard from "../shared/outline-card";
 import Label from "../ui/label";
 
 const GoalItem = () => {
@@ -23,7 +23,7 @@ export default function WeeklyGoalCard() {
         주간 목표
       </Text>
       <View className="mt-3">
-        <OutlienCard py="py-5">
+        <OutlineCard py="py-5">
           <View>
             <Label text="주간 목표" bg="bg-[#298DFF]" />
             <Text className="text-[14px] font-semibold text-black ml-2 mt-2">
@@ -39,7 +39,7 @@ export default function WeeklyGoalCard() {
               <GoalItem />
             </View>
           </View>
-        </OutlienCard>
+        </OutlineCard>
       </View>
     </View>
   );

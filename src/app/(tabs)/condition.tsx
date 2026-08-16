@@ -3,7 +3,7 @@ import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 import Button from "@/components/ui/Button";
 import Label from "@/components/ui/label";
 import { router } from "expo-router";
-import { Image, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 
 const ConditionBox = () => {
   return (
@@ -21,13 +21,13 @@ const ConditionBox = () => {
 
 const CheckItem = () => {
   return (
-    <View className="flex flex-row items-center">
+    <View className="flex-row items-center gap-2">
       <Image
         source={require("../../../assets/images/condition/check.png")}
-        className="*w-7 h-7"
+        className="w-7 h-7 shrink-0"
         resizeMode="contain"
       />
-      <View className="h-9.5 w-67.5 justify-center">
+      <View className="min-w-0 flex-1 min-h-9.5 justify-center">
         <Text className="text-[12px] font-medium text-black whitespace-pre-wrap">
           수면 h시간 mm분, 충분
         </Text>
@@ -40,7 +40,16 @@ export default function ConditionScreen() {
   return (
     <View className="flex-1 justify-center">
       <GradientScreenLayout offsetY={120} edges={["left", "right"]}>
-        <View className="items-start justify-between flex-1 py-16 w-full px-8">
+        <ScrollView
+          className="flex-1 w-full"
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "space-between",
+            paddingHorizontal: 32,
+            paddingVertical: 64,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
           <View className="w-full">
             <Text className="text-[16px] font-semibold text-black w-full text-center">
               내 컨디션
@@ -58,7 +67,7 @@ export default function ConditionScreen() {
           <Button onPress={() => router.push("/condition-check")}>
             컨디션 확인하기
           </Button>
-        </View>
+        </ScrollView>
       </GradientScreenLayout>
     </View>
   );

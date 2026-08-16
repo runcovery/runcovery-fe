@@ -15,7 +15,7 @@ export default function Button({
 }: ButtonProps) {
   const midClass = isMid ? "h-12" : "h-13";
   const whitePress = isWhite
-    ? "border-neutral-200 bg-white border"
+    ? "border-primary-500 bg-white border"
     : "bg-primary-500";
 
   return (
@@ -24,7 +24,7 @@ export default function Button({
       className={`${midClass} ${whitePress}  rounded-xl w-full items-center justify-center`}
     >
       <Text
-        className={`${isWhite ? "text-neutral-300" : "text-white"} text-[16px] font-medium  leading-8.75 text-center`}
+        className={`${isWhite ? "text-primary-500" : "text-white"} text-[16px] font-medium  leading-8.75 text-center`}
       >
         {children}
       </Text>

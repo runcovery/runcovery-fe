@@ -1,6 +1,6 @@
 import { View } from "react-native";
 
-export default function OutlienCard({
+export default function OutlineCard({
   children,
   py = "py-3",
 }: {
