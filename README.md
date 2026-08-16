@@ -1,5 +1,9 @@
 # Welcome to your Expo app 👋
 
+## 프로젝트 문서
+
+- [프로젝트 기술 스택 및 아키텍처 분석](./docs/PROJECT_ANALYSIS.md)
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
