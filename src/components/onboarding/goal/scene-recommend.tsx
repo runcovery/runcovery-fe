@@ -23,6 +23,8 @@ export default function SceneRecommendScreen({
 }) {
   const [customScene, setCustomScene] = useState("");
   const nickname = useProfileStore((state) => state.profile.nickname);
+  const mainScene = scenes.find((scene) => scene.sceneId === "main") ?? null;
+  const alternativeScenes = scenes.filter((scene) => scene.sceneId !== "main");
 
   return (
     <ScrollView
@@ -44,7 +46,7 @@ export default function SceneRecommendScreen({
 
           {/* 카드 프리뷰 */}
           <View className="mt-5">
-            <PreviewCard />
+            <PreviewCard scene={mainScene} />
           </View>
 
           {/* 장면 추천 */}
@@ -53,16 +55,21 @@ export default function SceneRecommendScreen({
               다른 장면도 있어요
             </Text>
             <View className="gap-3 mt-3">
-              {scenes.map((scene) => (
-                <Pressable
-                  key={scene.sceneId}
-                  onPress={() => onSceneChange(scene)}
-                >
-                  <OptionCard content={scene.scene} />
-                </Pressable>
-              ))}
-              <OptionCard content="크루와 나란히 달리며 쳐지지 않는 나" />
-              <OptionCard content="완주 메달을 목에 걸고 결승선을 통과하는 나" />
+              {alternativeScenes.length > 0 ? (
+                alternativeScenes.map((scene) => (
+                  <Pressable
+                    key={scene.sceneId}
+                    onPress={() => onSceneChange(scene)}
+                  >
+                    <OptionCard content={scene.scene} />
+                  </Pressable>
+                ))
+              ) : (
+                <>
+                  <OptionCard content="크루와 나란히 달리며 쳐지지 않는 나" />
+                  <OptionCard content="완주 메달을 목에 걸고 결승선을 통과하는 나" />
+                </>
+              )}
             </View>
           </View>
           {/* 직접 입력일 때 */}

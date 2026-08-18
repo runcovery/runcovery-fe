@@ -64,24 +64,33 @@ export default function GoalDetailFormScreen({
               placeholder="크루와 나란히 달리며 쳐지지 않는 나"
               value={goalDetails.distance}
               onChangeText={(value) => handleChange("distance", value)}
+              keyboardType="decimal-pad"
+              suffix="km"
             />
             <FormInputField
               label="목표 기간"
               placeholder="크루와 나란히 달리며 쳐지지 않는 나"
               value={goalDetails.duration}
               onChangeText={(value) => handleChange("duration", value)}
+              keyboardType="number-pad"
+              suffix="개월"
             />
             <FormInputField
               label="주 목표 횟수"
               placeholder="크루와 나란히 달리며 쳐지지 않는 나"
               value={goalDetails.weeklyCount}
               onChangeText={(value) => handleChange("weeklyCount", value)}
+              keyboardType="number-pad"
+              prefix="주 "
+              suffix="회"
             />
             <FormInputField
               label="가능한 시간"
               placeholder="크루와 나란히 달리며 쳐지지 않는 나"
               value={goalDetails.availableTime}
               onChangeText={(value) => handleChange("availableTime", value)}
+              keyboardType="number-pad"
+              suffix="분"
             />
           </View>
         </View>

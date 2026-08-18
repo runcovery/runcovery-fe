@@ -2,11 +2,37 @@ import CareCenterCard from "@/components/home/care-center";
 import CareTipCard from "@/components/home/care-tip";
 import ConditionOverviewCard from "@/components/home/condition-overview";
 import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
+import Button from "@/components/ui/Button";
+import { useHomeData } from "@/hooks/home/useHomeData";
 import { useProfileStore } from "@/stores/useProfileStore";
-import { Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 
 export default function HomeScreen() {
-  const nickname = useProfileStore((state) => state.profile.nickname);
+  const storedNickname = useProfileStore((state) => state.profile.nickname);
+  const { data, errorMessage, isLoading, reload } = useHomeData();
+  const nickname = data?.nickname ?? storedNickname;
+
+  if (isLoading && !data) {
+    return (
+      <View className="flex-1 items-center justify-center gap-3">
+        <ActivityIndicator color="#725AF5" size="large" />
+        <Text className="text-[14px] text-neutral-300">
+          현재 위치와 홈 정보를 불러오고 있어요.
+        </Text>
+      </View>
+    );
+  }
+
+  if (errorMessage && !data) {
+    return (
+      <View className="flex-1 items-center justify-center px-8 gap-5">
+        <Text className="text-[14px] text-neutral-700 text-center">
+          {errorMessage}
+        </Text>
+        <Button onPress={reload}>다시 시도</Button>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1">
@@ -24,8 +50,13 @@ export default function HomeScreen() {
 
           {/* 카드 컨텐츠 */}
           <View className="mt-5 gap-5">
-            <ConditionOverviewCard />
-            <CareTipCard />
+            <ConditionOverviewCard
+              achievementRate={data?.achievementRate ?? 0}
+              daysRemaining={data?.daysRemaining ?? 0}
+              scene={data?.scene ?? "설정된 미래 목표가 없습니다."}
+              temp={data?.temp ?? 0}
+            />
+            <CareTipCard tip={data?.wellnessTip ?? "오늘도 가볍게 시작해보세요."} />
           </View>
 
           {/* 매장 */}

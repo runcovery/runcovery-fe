@@ -6,8 +6,20 @@ import AchievementProgress from "./achievement-progress";
 
 // const RenderImg = []
 
-export default function ConditionOverviewCard() {
-  const progress = 100;
+interface ConditionOverviewCardProps {
+  achievementRate: number;
+  daysRemaining: number;
+  scene: string;
+  temp: number;
+}
+
+export default function ConditionOverviewCard({
+  achievementRate,
+  daysRemaining,
+  scene,
+  temp,
+}: ConditionOverviewCardProps) {
+  const progress = achievementRate;
   const renderImg =
     progress > 50
       ? require("../../../assets/images/home/overview-main.png")
@@ -19,7 +31,7 @@ export default function ConditionOverviewCard() {
       <View className="flex-row justify-between gap-3 mt-4">
         <View className="flex-1 min-w-0 gap-2">
           <Text className="text-[18px] font-semibold text-black whitespace-pre-wrap">
-            16층을 걸어도 지치지 {"\n"}않는 나 💪
+            {scene}
           </Text>
           <Text className="text-[12px] font-medium text-neutral-300">
             체력이 좋아져 하루가 가벼운 모습
@@ -37,10 +49,10 @@ export default function ConditionOverviewCard() {
         <View className="shrink-0 items-end">
           <AchievementProgress progress={progress} />
           <Text className="text-[16px] font-bold text-neutral-300 mt-5">
-            26°C
+            {temp}°C
           </Text>
           <Text className="text-[48px] font-bold text-primary-500 -mt-2">
-            D-4
+            {daysRemaining > 0 ? `D-${daysRemaining}` : "D-Day"}
           </Text>
           <Text className="text-[10px] font-medium text-neutral-300">
             목표 달성까지 남은 시간

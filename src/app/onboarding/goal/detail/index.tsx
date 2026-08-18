@@ -23,6 +23,7 @@ export default function GoalDetailScreen() {
     handleSceneNext,
     isSubmitting,
     scenes,
+    selectedScene,
     selectedId,
     setSelectedId,
     step,
@@ -47,10 +48,7 @@ export default function GoalDetailScreen() {
       />
     ),
     Form: (
-      <GoalDetailFormScreen
-        onChange={updateGoalPlan}
-        onNext={handleFormNext}
-      />
+      <GoalDetailFormScreen onChange={updateGoalPlan} onNext={handleFormNext} />
     ),
     Scene: (
       <SceneRecommendScreen
@@ -66,10 +64,16 @@ export default function GoalDetailScreen() {
         goal={goal}
         onChange={updateGoalPlan}
         onNext={goToSummary}
+        scene={selectedScene}
       />
     ),
     Summary: (
-      <GoalSummaryScreen disabled={isSubmitting} onSubmit={handleSubmit} />
+      <GoalSummaryScreen
+        disabled={isSubmitting}
+        goal={goal}
+        onSubmit={handleSubmit}
+        scene={selectedScene}
+      />
     ),
   };
 

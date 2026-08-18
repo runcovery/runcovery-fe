@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useProfileStore } from "@/stores/useProfileStore";
-import type { GoalPayload, GoalPlanPayload } from "@/types/goal";
+import type {
+  GoalPayload,
+  GoalPlanPayload,
+  RecommendedScene,
+} from "@/types/goal";
 import { ScrollView, Text, View } from "react-native";
 import Button from "../../../components/ui/Button";
 import TitleSection from "../title-section";
@@ -11,10 +15,12 @@ export default function GoalAdjustScreen({
   goal,
   onChange,
   onNext,
+  scene,
 }: {
   goal: GoalPayload;
   onChange: (goalPlan: GoalPlanPayload) => void;
   onNext: () => void;
+  scene: RecommendedScene | null;
 }) {
   const [goalDetails, setGoalDetails] = useState({
     distance: goal.targetDistance ? String(goal.targetDistance) : "",
@@ -62,7 +68,7 @@ export default function GoalAdjustScreen({
 
           {/* 카드 프리뷰 */}
           <View className="mt-5">
-            <PreviewCard />
+            <PreviewCard scene={scene} />
           </View>
 
           {/* 리스트 폼 */}
@@ -76,24 +82,33 @@ export default function GoalAdjustScreen({
                 placeholder="크루와 나란히 달리며 쳐지지 않는 나"
                 value={goalDetails.distance}
                 onChangeText={(value) => handleChange("distance", value)}
+                keyboardType="decimal-pad"
+                suffix="km"
               />
               <FormInputField
                 label="목표 기간"
                 placeholder="크루와 나란히 달리며 쳐지지 않는 나"
                 value={goalDetails.duration}
                 onChangeText={(value) => handleChange("duration", value)}
+                keyboardType="number-pad"
+                suffix="개월"
               />
               <FormInputField
                 label="주 목표 횟수"
                 placeholder="크루와 나란히 달리며 쳐지지 않는 나"
                 value={goalDetails.weeklyCount}
                 onChangeText={(value) => handleChange("weeklyCount", value)}
+                keyboardType="number-pad"
+                prefix="주 "
+                suffix="회"
               />
               <FormInputField
                 label="가능한 시간"
                 placeholder="크루와 나란히 달리며 쳐지지 않는 나"
                 value={goalDetails.availableTime}
                 onChangeText={(value) => handleChange("availableTime", value)}
+                keyboardType="number-pad"
+                suffix="분"
               />
             </View>
           </View>

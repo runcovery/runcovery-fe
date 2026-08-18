@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import OutlineCard from "../shared/outline-card";
 
-export default function CareTipCard() {
+export default function CareTipCard({ tip }: { tip: string }) {
   return (
     <OutlineCard py="py-5">
       <View className="flex flex-row gap-3">
@@ -14,7 +14,7 @@ export default function CareTipCard() {
       </View>
       <View className="gap-2 mt-3">
         <Text className="text-[12px] font-semibold text-neutral-700">
-          운동 후에 물을 충분히 마셔주면 좋아요!
+          {tip}
         </Text>
         <Text className="text-[10px] font-medium text-neutral-300">
           수분 보충은 회복의 시작이에요.

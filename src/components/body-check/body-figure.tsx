@@ -7,6 +7,7 @@ import {
   BodyRegion,
   BodySide,
   FRONT_PARTS,
+  getBodyPartCode,
 } from "./body-part-data";
 
 interface BodyFigureProps {
@@ -23,7 +24,8 @@ export default function BodyFigure({
   onToggle,
 }: BodyFigureProps) {
   const height = (width / 150) * 350;
-  const partId = (region: BodyRegion): BodyPartId => `${side}-${region}`;
+  const partId = (region: BodyRegion): BodyPartId =>
+    getBodyPartCode(side, region);
   const color = (region: BodyRegion, dark = false) =>
     selectedParts.has(partId(region))
       ? BODY_COLORS.selected

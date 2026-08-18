@@ -1,1 +1,1 @@
-export const ENABLE_ONBOARDING_API = false;
+export const ENABLE_ONBOARDING_API = true;

@@ -1,5 +1,6 @@
 import { FlatList, Text, View } from "react-native";
 import { useProfileStore } from "@/stores/useProfileStore";
+import type { GoalPlanPayload, RecommendedScene } from "@/types/goal";
 import Button from "../../../components/ui/Button";
 import TitleSection from "../title-section";
 import PreviewCard from "./preview-card";
@@ -8,13 +9,6 @@ interface MetricInterface {
   label: string;
   value: string;
 }
-
-const GOAL_METRICS: MetricInterface[] = [
-  { label: "최종 목표 거리", value: "5km" },
-  { label: "기간", value: "3개월" },
-  { label: "최종 주간 목표 횟수", value: "2회" },
-  { label: "시간", value: "15분" },
-];
 
 const MetricCard = ({ label, value }: MetricInterface) => {
   return (
@@ -29,12 +23,25 @@ const MetricCard = ({ label, value }: MetricInterface) => {
 
 export default function GoalSummaryScreen({
   disabled,
+  goal,
   onSubmit,
+  scene,
 }: {
   disabled: boolean;
+  goal: GoalPlanPayload;
   onSubmit: () => void;
+  scene: RecommendedScene | null;
 }) {
   const nickname = useProfileStore((state) => state.profile.nickname);
+  const goalMetrics: MetricInterface[] = [
+    { label: "최종 목표 거리", value: `${goal.targetDistance}km` },
+    { label: "기간", value: `${goal.targetPeriod}개월` },
+    {
+      label: "최종 주간 목표 횟수",
+      value: `${goal.weeklyFrequency}회`,
+    },
+    { label: "시간", value: `${goal.availableTime}분` },
+  ];
 
   return (
     <View className="flex-1 justify-between">
@@ -49,13 +56,13 @@ export default function GoalSummaryScreen({
 
         {/* 카드 프리뷰 */}
         <View className="mt-5">
-          <PreviewCard />
+          <PreviewCard scene={scene} />
         </View>
 
         {/* 세부 목표 리스트 */}
         <FlatList
           className="mt-8"
-          data={GOAL_METRICS}
+          data={goalMetrics}
           numColumns={2}
           scrollEnabled={false}
           keyExtractor={(item) => item.label}

@@ -59,7 +59,9 @@ export default function ChooseStepScreen({
 
       {/* 버튼 */}
       <View>
-        <Button onPress={onNext}>다음</Button>
+        <Button disabled={selectedId === 0} onPress={onNext}>
+          다음
+        </Button>
       </View>
     </View>
   );

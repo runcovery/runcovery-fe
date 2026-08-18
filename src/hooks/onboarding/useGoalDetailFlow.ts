@@ -45,8 +45,15 @@ export const useGoalDetailFlow = () => {
     if (!ENABLE_ONBOARDING_API) return;
 
     const response = await recommendScenesByProfile();
-    setScenes(response.data.data.scenes);
-    setSelectedScene(null);
+    const recommendedScenes = response.data.data.scenes;
+    const mainScene =
+      recommendedScenes.find((scene) => scene.sceneId === "main") ?? null;
+
+    setScenes(recommendedScenes);
+    setSelectedScene(mainScene);
+    if (mainScene) {
+      setGoal((previous) => ({ ...previous, scene: mainScene.scene }));
+    }
   };
 
   const requestScenesByPlan = async () => {
@@ -60,8 +67,15 @@ export const useGoalDetailFlow = () => {
         availableTime: goal.availableTime,
       },
     });
-    setScenes(response.data.data.scenes);
-    setSelectedScene(null);
+    const recommendedScenes = response.data.data.scenes;
+    const mainScene =
+      recommendedScenes.find((scene) => scene.sceneId === "main") ?? null;
+
+    setScenes(recommendedScenes);
+    setSelectedScene(mainScene);
+    if (mainScene) {
+      setGoal((previous) => ({ ...previous, scene: mainScene.scene }));
+    }
   };
 
   const handleChooseNext = async () => {
@@ -169,6 +183,7 @@ export const useGoalDetailFlow = () => {
     handleSceneNext,
     isSubmitting,
     scenes,
+    selectedScene,
     selectedId,
     setSelectedId,
     step,
