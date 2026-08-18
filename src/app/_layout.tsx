@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 
 import { useProfileStore } from "@/stores/useProfileStore";
+import { useCameraPermissionStore } from "@/stores/useCameraPermissionStore";
 import { useLocationPermissionStore } from "@/stores/useLocationPermissionStore";
 
 import "../global.css";
@@ -16,12 +17,25 @@ export default function RootLayout() {
   const initializeLocationPermission = useLocationPermissionStore(
     (state) => state.initializePermission,
   );
+  const initializeCameraPermission = useCameraPermissionStore(
+    (state) => state.initializePermission,
+  );
 
   useEffect(() => {
     initializeUserId();
-    void initializeLocationPermission();
+
+    const initializePermissions = async () => {
+      await initializeLocationPermission();
+      await initializeCameraPermission();
+    };
+
+    void initializePermissions();
     SplashScreen.hide();
-  }, [initializeLocationPermission, initializeUserId]);
+  }, [
+    initializeCameraPermission,
+    initializeLocationPermission,
+    initializeUserId,
+  ]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
