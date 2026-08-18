@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 
 import { useProfileStore } from "@/stores/useProfileStore";
+import { useLocationPermissionStore } from "@/stores/useLocationPermissionStore";
 
 import "../global.css";
 
@@ -12,11 +13,15 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const initializeUserId = useProfileStore((state) => state.initializeUserId);
+  const initializeLocationPermission = useLocationPermissionStore(
+    (state) => state.initializePermission,
+  );
 
   useEffect(() => {
     initializeUserId();
+    void initializeLocationPermission();
     SplashScreen.hide();
-  }, [initializeUserId]);
+  }, [initializeLocationPermission, initializeUserId]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
