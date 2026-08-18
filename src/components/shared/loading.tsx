@@ -1,5 +1,6 @@
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Button from "../ui/Button";
+import AnimatedPinkCat from "./animated-pink-cat";
 
 interface LoadingScreenProps {
   title: string;
@@ -45,11 +46,7 @@ export default function LoadingScreen({
         </View>
       </View>
       <View className="flex-1 w-full items-center justify-center gap-12 py-8">
-        <Image
-          source={require("../../../assets/images/character/goal-pink-cat.png")}
-          className="w-43 h-51"
-          resizeMode="contain"
-        />
+        <AnimatedPinkCat width={172} />
         <Text className="text-[14px] font-medium text-neutral-700">{text}</Text>
       </View>
     </View>

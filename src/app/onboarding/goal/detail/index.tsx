@@ -4,38 +4,73 @@ import GoalDetailFormScreen from "@/components/onboarding/goal/goal-detail-form"
 import GoalSummaryScreen from "@/components/onboarding/goal/goal-summary";
 import SceneRecommendScreen from "@/components/onboarding/goal/scene-recommend";
 import StepScreenLayout from "@/components/shared/step-screen-layout";
-import { ReactNode, useState } from "react";
+import {
+  GoalDetailStep,
+  useGoalDetailFlow,
+} from "@/hooks/onboarding/useGoalDetailFlow";
+import { router } from "expo-router";
+import { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 
-type DetailStep = "Scene" | "Adjust" | "Form" | "Summary" | "Choose";
-
 export default function GoalDetailScreen() {
-  const [selectedId, setSelectedId] = useState(0);
-  const [step, setStep] = useState<DetailStep>("Choose");
+  const {
+    goal,
+    goToSummary,
+    handleChooseNext,
+    handleFormNext,
+    handleRefreshScenes,
+    handleSceneChange,
+    handleSceneNext,
+    isSubmitting,
+    scenes,
+    selectedId,
+    setSelectedId,
+    step,
+    submitGoal,
+    updateGoalPlan,
+  } = useGoalDetailFlow();
 
-  const stepComponents: Record<DetailStep, ReactNode> = {
+  const handleSubmit = async () => {
+    const isSaved = await submitGoal();
+
+    if (isSaved) {
+      router.navigate("/home");
+    }
+  };
+
+  const stepComponents: Record<GoalDetailStep, ReactNode> = {
     Choose: (
       <ChooseStepScreen
         selectedId={selectedId}
         onSelect={setSelectedId}
-        onNext={() => {
-          if (selectedId === 1) setStep("Scene");
-          if (selectedId === 2) setStep("Form");
-        }}
+        onNext={handleChooseNext}
       />
     ),
-    Form: <GoalDetailFormScreen onNext={() => setStep("Scene")} />,
-
+    Form: (
+      <GoalDetailFormScreen
+        onChange={updateGoalPlan}
+        onNext={handleFormNext}
+      />
+    ),
     Scene: (
       <SceneRecommendScreen
+        scenes={scenes}
         selectedId={selectedId}
-        onNext={() => setStep(selectedId === 1 ? "Adjust" : "Summary")}
+        onSceneChange={handleSceneChange}
+        onNext={handleSceneNext}
+        onRefresh={handleRefreshScenes}
       />
     ),
-
-    Adjust: <GoalAdjustScreen onNext={() => setStep("Summary")} />,
-
-    Summary: <GoalSummaryScreen />,
+    Adjust: (
+      <GoalAdjustScreen
+        goal={goal}
+        onChange={updateGoalPlan}
+        onNext={goToSummary}
+      />
+    ),
+    Summary: (
+      <GoalSummaryScreen disabled={isSubmitting} onSubmit={handleSubmit} />
+    ),
   };
 
   return (
@@ -44,10 +79,7 @@ export default function GoalDetailScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <StepScreenLayout>
-        <View className="flex-1 w-full">
-          {/* 스텝 렌더링 */}
-          {stepComponents[step]}
-        </View>
+        <View className="flex-1 w-full">{stepComponents[step]}</View>
       </StepScreenLayout>
     </KeyboardAvoidingView>
   );

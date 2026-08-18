@@ -3,12 +3,16 @@
     "name": "Runcovery",
     "slug": "runcovery-fe",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "orientation": "portrait",
     "icon": "./assets/expo.icon/Assets/app-icon-square.png",
     "scheme": "runcovery",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon/Assets/app-icon-square.png"
+      "icon": "./assets/expo.icon/Assets/app-icon-square.png",
+      "bundleIdentifier": "com.jjong0923.runcoveryfe"
     },
     "android": {
       "adaptiveIcon": {

@@ -1,23 +1,45 @@
 import { useState } from "react";
+import { useProfileStore } from "@/stores/useProfileStore";
+import type { GoalPayload, GoalPlanPayload } from "@/types/goal";
 import { ScrollView, Text, View } from "react-native";
 import Button from "../../../components/ui/Button";
 import TitleSection from "../title-section";
 import FormInputField from "./form-input-field";
 import PreviewCard from "./preview-card";
 
-export default function GoalAdjustScreen({ onNext }: { onNext: () => void }) {
+export default function GoalAdjustScreen({
+  goal,
+  onChange,
+  onNext,
+}: {
+  goal: GoalPayload;
+  onChange: (goalPlan: GoalPlanPayload) => void;
+  onNext: () => void;
+}) {
   const [goalDetails, setGoalDetails] = useState({
-    distance: "",
-    duration: "",
-    weeklyCount: "",
-    availableTime: "",
+    distance: goal.targetDistance ? String(goal.targetDistance) : "",
+    duration: goal.targetPeriod ? String(goal.targetPeriod) : "",
+    weeklyCount: goal.weeklyFrequency ? String(goal.weeklyFrequency) : "",
+    availableTime: goal.availableTime ? String(goal.availableTime) : "",
   });
+  const nickname = useProfileStore((state) => state.profile.nickname);
 
   const handleChange = (field: keyof typeof goalDetails, value: string) => {
-    setGoalDetails((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setGoalDetails((prev) => {
+      const next = {
+        ...prev,
+        [field]: value,
+      };
+
+      onChange({
+        targetDistance: Number(next.distance),
+        targetPeriod: Number(next.duration),
+        weeklyFrequency: Number(next.weeklyCount),
+        availableTime: Number(next.availableTime),
+      });
+
+      return next;
+    });
   };
 
   return (
@@ -33,7 +55,7 @@ export default function GoalAdjustScreen({ onNext }: { onNext: () => void }) {
           {/* 타이틀 */}
           <View className="mt-3">
             <TitleSection
-              title="00님의 목표를 설정했어요."
+              title={`${nickname}님의 목표를 설정했어요.`}
               subTitle="선택한 장면에 맞는 목표를 찾았어요."
             />
           </View>

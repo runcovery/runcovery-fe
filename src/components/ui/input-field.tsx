@@ -1,4 +1,5 @@
-import { KeyboardTypeOptions, Text, TextInput, View } from "react-native";
+import type { FocusEvent, KeyboardTypeOptions } from "react-native";
+import { Text, TextInput, View } from "react-native";
 
 interface InputFieldProps {
   label: string;
@@ -6,6 +7,8 @@ interface InputFieldProps {
   value: string;
   onChangeText: (text: string) => void;
   keyboardType?: KeyboardTypeOptions;
+  onFocus?: (event: FocusEvent) => void;
+  onPressIn?: () => void;
 }
 
 export default function InputField({
@@ -14,6 +17,8 @@ export default function InputField({
   value,
   onChangeText,
   keyboardType,
+  onFocus,
+  onPressIn,
 }: InputFieldProps) {
   const hasValue = value.trim().length > 0;
 
@@ -27,6 +32,8 @@ export default function InputField({
         value={value}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
+        onFocus={onFocus}
+        onPressIn={onPressIn}
         style={{
           paddingHorizontal: 20,
           paddingVertical: 14,

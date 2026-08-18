@@ -3,15 +3,16 @@ import TitleSection from "@/components/onboarding/title-section";
 import StepScreenLayout from "@/components/shared/step-screen-layout";
 import Button from "@/components/ui/Button";
 import OptionCard from "@/components/ui/option-card";
+import { useProfileStore } from "@/stores/useProfileStore";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import LoadingScreen from "../components/shared/loading";
 
 type StepType = "body" | "sleep" | "pain" | "loading";
 
-const CHECK_DATA = {
+const getCheckData = (nickname: string) => ({
   body: {
-    title: "지금 00님의 몸 상태는 어떤가요?",
+    title: `지금 ${nickname}님의 몸 상태는 어떤가요?`,
     subTitle: "미션 부여 전에 몸 상태를 확인할게요.",
     list: [
       { id: 1, content: "완전 방전이에요." },
@@ -28,11 +29,13 @@ const CHECK_DATA = {
       { id: 3, content: "자꾸 뒤척이거나 부족했어요. (수면 부족)" },
     ],
   },
-} as const;
+}) as const;
 
 export default function ConditionCheckScreen() {
   const [step, setStep] = useState<StepType>("body");
   const [selectedBodyParts, setSelectedBodyParts] = useState<BodyPartId[]>([]);
+  const nickname = useProfileStore((state) => state.profile.nickname);
+  const checkData = getCheckData(nickname);
 
   const isCheck = step !== "pain" && step !== "loading";
 
@@ -58,12 +61,12 @@ export default function ConditionCheckScreen() {
           >
             <View>
               <TitleSection
-                title={CHECK_DATA[step].title}
-                subTitle={CHECK_DATA[step].subTitle}
+                title={checkData[step].title}
+                subTitle={checkData[step].subTitle}
               />
 
               <View className="gap-9 mt-7">
-                {CHECK_DATA[step].list.map((item) => (
+                {checkData[step].list.map((item) => (
                   <OptionCard
                     key={item.id}
                     py="py-6"

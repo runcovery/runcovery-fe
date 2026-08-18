@@ -2,9 +2,12 @@ import DailyGoalCard from "@/components/mission/daily-goal-card";
 import WeeklyGoalCard from "@/components/mission/weekly-goal-card";
 import GradientScreenLayout from "@/components/shared/gradient-screen-layout";
 import Button from "@/components/ui/Button";
+import { useProfileStore } from "@/stores/useProfileStore";
 import { ScrollView, Text, View } from "react-native";
 
 export default function MissionScreen() {
+  const nickname = useProfileStore((state) => state.profile.nickname);
+
   return (
     <View className="flex-1 justify-center">
       <GradientScreenLayout offsetY={120} edges={["left", "right"]}>
@@ -23,7 +26,7 @@ export default function MissionScreen() {
           <View className="mt-3">
             <View className="w-full gap-1">
               <Text className="text-[18px] font-semibold text-black whitespace-pre-wrap">
-                00님의 목표와 현재 상황을 {"\n"}고려하여 러닝 플랜을 만들었어요!
+                {nickname}님의 목표와 현재 상황을 {"\n"}고려하여 러닝 플랜을 만들었어요!
               </Text>
               <Text className="text-neutral-300 will-change-variable text-[14px] font-medium whitespace-pre-wrap">
                 미션 부여 전에 몸 상태를 확인할게요.

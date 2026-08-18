@@ -1,31 +1,48 @@
 import { create } from "zustand";
 
-export interface Profile {
-  nickname: string;
-  age: string;
-  gender: string;
-  height: string;
-  weight: string;
-}
+import type { UserProfile } from "@/types/user";
+import { createRandomUuid } from "@/utils/createRandomUuid";
 
-type ProfileField = keyof Profile;
+type ProfileField = keyof UserProfile;
 
 interface ProfileStore {
-  profile: Profile;
-  setProfileField: (field: ProfileField, value: string) => void;
+  userId: string | null;
+  isUserIdInitialized: boolean;
+  profile: UserProfile;
+  initializeUserId: () => string;
+  setProfileField: <Field extends ProfileField>(
+    field: Field,
+    value: UserProfile[Field],
+  ) => void;
   resetProfile: () => void;
 }
 
-const initialProfile: Profile = {
+const initialProfile: UserProfile = {
+  runningExperience: "",
   nickname: "",
-  age: "",
+  age: 0,
   gender: "",
-  height: "",
-  weight: "",
+  height: 0,
+  weight: 0,
 };
 
-export const useProfileStore = create<ProfileStore>((set) => ({
+export const useProfileStore = create<ProfileStore>((set, get) => ({
+  userId: null,
+  isUserIdInitialized: false,
   profile: initialProfile,
+  initializeUserId: () => {
+    const existingUserId = get().userId;
+
+    if (get().isUserIdInitialized && existingUserId) {
+      return existingUserId;
+    }
+
+    const userId = createRandomUuid();
+
+    set({ userId, isUserIdInitialized: true });
+
+    return userId;
+  },
   setProfileField: (field, value) =>
     set((state) => ({
       profile: {

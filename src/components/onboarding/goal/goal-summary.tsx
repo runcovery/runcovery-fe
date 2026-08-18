@@ -1,5 +1,5 @@
-import { router } from "expo-router";
 import { FlatList, Text, View } from "react-native";
+import { useProfileStore } from "@/stores/useProfileStore";
 import Button from "../../../components/ui/Button";
 import TitleSection from "../title-section";
 import PreviewCard from "./preview-card";
@@ -27,14 +27,22 @@ const MetricCard = ({ label, value }: MetricInterface) => {
   );
 };
 
-export default function GoalSummaryScreen() {
+export default function GoalSummaryScreen({
+  disabled,
+  onSubmit,
+}: {
+  disabled: boolean;
+  onSubmit: () => void;
+}) {
+  const nickname = useProfileStore((state) => state.profile.nickname);
+
   return (
     <View className="flex-1 justify-between">
       <View>
         {/* 타이틀 */}
         <View className="mt-3">
           <TitleSection
-            title="00님의 미래가 설계되었어요."
+            title={`${nickname}님의 미래가 설계되었어요.`}
             subTitle="선택한 장면에 맞는 미래를 설계했어요."
           />
         </View>
@@ -62,7 +70,7 @@ export default function GoalSummaryScreen() {
       </View>
 
       {/* 버튼 */}
-      <Button onPress={() => router.navigate("/home")}>시작하기</Button>
+      <Button disabled={disabled} onPress={onSubmit}>시작하기</Button>
     </View>
   );
 }

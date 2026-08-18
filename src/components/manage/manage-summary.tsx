@@ -1,4 +1,5 @@
 import { ScrollView, Text, View } from "react-native";
+import { useProfileStore } from "@/stores/useProfileStore";
 import TitleSection from "../onboarding/title-section";
 import Button from "../ui/Button";
 import WeatherPreviewCard from "./weather-preview-card";
@@ -36,6 +37,8 @@ export default function ManageSummaryScreen({
 }: {
   onNext: () => void;
 }) {
+  const nickname = useProfileStore((state) => state.profile.nickname);
+
   return (
     <ScrollView
       className="flex-1"
@@ -46,7 +49,7 @@ export default function ManageSummaryScreen({
         {/* 타이틀 */}
         <View className="mt-3">
           <TitleSection
-            title="00님의 미래가 설계되었어요."
+            title={`${nickname}님의 미래가 설계되었어요.`}
             subTitle="선택한 장면에 맞는 미래를 설계했어요."
           />
         </View>

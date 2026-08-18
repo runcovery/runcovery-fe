@@ -4,6 +4,7 @@ interface ButtonProps {
   children: React.ReactNode;
   isMid?: boolean;
   isWhite?: boolean;
+  disabled?: boolean;
   onPress?: PressableProps["onPress"];
 }
 
@@ -11,6 +12,7 @@ export default function Button({
   children,
   isMid = false,
   isWhite = false,
+  disabled = false,
   onPress,
 }: ButtonProps) {
   const midClass = isMid ? "h-12" : "h-13";
@@ -21,7 +23,8 @@ export default function Button({
   return (
     <Pressable
       onPress={onPress}
-      className={`${midClass} ${whitePress}  rounded-xl w-full items-center justify-center`}
+      disabled={disabled}
+      className={`${midClass} ${whitePress} ${disabled ? "opacity-40" : ""} rounded-xl w-full items-center justify-center`}
     >
       <Text
         className={`${isWhite ? "text-primary-500" : "text-white"} text-[16px] font-medium  leading-8.75 text-center`}

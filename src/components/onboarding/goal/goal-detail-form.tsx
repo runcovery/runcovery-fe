@@ -1,12 +1,16 @@
 import Button from "@/components/ui/Button";
+import { useProfileStore } from "@/stores/useProfileStore";
+import type { GoalPlanPayload } from "@/types/goal";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import TitleSection from "../title-section";
 import FormInputField from "./form-input-field";
 
 export default function GoalDetailFormScreen({
+  onChange,
   onNext,
 }: {
+  onChange: (goalPlan: GoalPlanPayload) => void;
   onNext: () => void;
 }) {
   const [goalDetails, setGoalDetails] = useState({
@@ -15,12 +19,24 @@ export default function GoalDetailFormScreen({
     weeklyCount: "",
     availableTime: "",
   });
+  const nickname = useProfileStore((state) => state.profile.nickname);
 
   const handleChange = (field: keyof typeof goalDetails, value: string) => {
-    setGoalDetails((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setGoalDetails((prev) => {
+      const next = {
+        ...prev,
+        [field]: value,
+      };
+
+      onChange({
+        targetDistance: Number(next.distance),
+        targetPeriod: Number(next.duration),
+        weeklyFrequency: Number(next.weeklyCount),
+        availableTime: Number(next.availableTime),
+      });
+
+      return next;
+    });
   };
 
   return (
@@ -37,7 +53,7 @@ export default function GoalDetailFormScreen({
           <View className="mt-3">
             <TitleSection
               title="목표를 입력해 주세요."
-              subTitle="00님이 목표를 직접 설정해 주세요!"
+              subTitle={`${nickname}님이 목표를 직접 설정해 주세요!`}
             />
           </View>
 
