@@ -4,14 +4,34 @@ import OutlineCard from "../shared/outline-card";
 import Label from "../ui/label";
 import AchievementProgress from "./achievement-progress";
 
-// const RenderImg = []
+const getOverviewImage = (progress: number) => {
+  if (progress >= 100) {
+    return require("../../../assets/images/home/overview-100.png");
+  }
+  if (progress >= 80) {
+    return require("../../../assets/images/home/overview-over-50.png");
+  }
+  if (progress >= 50) {
+    return require("../../../assets/images/home/overview-over-50-under-80.png");
+  }
+  return require("../../../assets/images/home/overview-under-50.png");
+};
 
-export default function ConditionOverviewCard() {
-  const progress = 100;
-  const renderImg =
-    progress > 50
-      ? require("../../../assets/images/home/overview-main.png")
-      : require("../../../assets/images/home/overview-under-50.png");
+interface ConditionOverviewCardProps {
+  achievementRate: number;
+  daysRemaining: number;
+  scene: string;
+  temp: number;
+}
+
+export default function ConditionOverviewCard({
+  achievementRate,
+  daysRemaining,
+  scene,
+  temp,
+}: ConditionOverviewCardProps) {
+  const progress = Math.min(100, Math.max(0, achievementRate));
+  const overviewImage = getOverviewImage(progress);
 
   return (
     <OutlineCard>
@@ -19,17 +39,13 @@ export default function ConditionOverviewCard() {
       <View className="flex-row justify-between gap-3 mt-4">
         <View className="flex-1 min-w-0 gap-2">
           <Text className="text-[18px] font-semibold text-black whitespace-pre-wrap">
-            16층을 걸어도 지치지 {"\n"}않는 나 💪
+            {scene}
           </Text>
           <Text className="text-[12px] font-medium text-neutral-300">
             체력이 좋아져 하루가 가벼운 모습
           </Text>
           <Image
-            source={
-              progress === 100
-                ? require("../../../assets/images/home/overview-100.png")
-                : renderImg
-            }
+            source={overviewImage}
             className="w-full max-w-50 h-40 mt-4"
             resizeMode="contain"
           />
@@ -37,10 +53,10 @@ export default function ConditionOverviewCard() {
         <View className="shrink-0 items-end">
           <AchievementProgress progress={progress} />
           <Text className="text-[16px] font-bold text-neutral-300 mt-5">
-            26°C
+            {temp}°C
           </Text>
           <Text className="text-[48px] font-bold text-primary-500 -mt-2">
-            D-4
+            {daysRemaining > 0 ? `D-${daysRemaining}` : "D-Day"}
           </Text>
           <Text className="text-[10px] font-medium text-neutral-300">
             목표 달성까지 남은 시간

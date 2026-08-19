@@ -33,9 +33,13 @@ const CHECK_DATA = {
 export default function CareCheckStepScreen({
   step,
   onNext,
+  selectedId,
+  onSelect,
 }: {
   step: CheckType;
   onNext: () => void;
+  selectedId?: number;
+  onSelect: (id: number) => void;
 }) {
   return (
     <ScrollView
@@ -52,12 +56,18 @@ export default function CareCheckStepScreen({
         {/* 리스트 */}
         <View className="gap-9 mt-6">
           {CHECK_DATA[step].list.map((item) => (
-            <OptionCard py="py-6" key={item.id} content={item.content} />
+            <OptionCard
+              py="py-6"
+              key={item.id}
+              content={item.content}
+              selected={selectedId === item.id}
+              onPress={() => onSelect(item.id)}
+            />
           ))}
         </View>
       </View>
 
-      <Button onPress={onNext}>다음</Button>
+      <Button disabled={!selectedId} onPress={onNext}>다음</Button>
     </ScrollView>
   );
 }

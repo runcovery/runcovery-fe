@@ -1,5 +1,6 @@
-import { router } from "expo-router";
 import { FlatList, Text, View } from "react-native";
+import { useProfileStore } from "@/stores/useProfileStore";
+import type { GoalPlanPayload, RecommendedScene } from "@/types/goal";
 import Button from "../../../components/ui/Button";
 import TitleSection from "../title-section";
 import PreviewCard from "./preview-card";
@@ -8,13 +9,6 @@ interface MetricInterface {
   label: string;
   value: string;
 }
-
-const GOAL_METRICS: MetricInterface[] = [
-  { label: "최종 목표 거리", value: "5km" },
-  { label: "기간", value: "3개월" },
-  { label: "최종 주간 목표 횟수", value: "2회" },
-  { label: "시간", value: "15분" },
-];
 
 const MetricCard = ({ label, value }: MetricInterface) => {
   return (
@@ -27,27 +21,48 @@ const MetricCard = ({ label, value }: MetricInterface) => {
   );
 };
 
-export default function GoalSummaryScreen() {
+export default function GoalSummaryScreen({
+  isLoading,
+  goal,
+  onSubmit,
+  scene,
+}: {
+  isLoading: boolean;
+  goal: GoalPlanPayload;
+  onSubmit: () => void;
+  scene: RecommendedScene | null;
+}) {
+  const nickname = useProfileStore((state) => state.profile.nickname);
+  const goalMetrics: MetricInterface[] = [
+    { label: "최종 목표 거리", value: `${goal.targetDistance}km` },
+    { label: "기간", value: `${goal.targetPeriod}개월` },
+    {
+      label: "최종 주간 목표 횟수",
+      value: `${goal.weeklyFrequency}회`,
+    },
+    { label: "시간", value: `${goal.availableTime}분` },
+  ];
+
   return (
     <View className="flex-1 justify-between">
       <View>
         {/* 타이틀 */}
         <View className="mt-3">
           <TitleSection
-            title="00님의 미래가 설계되었어요."
+            title={`${nickname}님의 미래가 설계되었어요.`}
             subTitle="선택한 장면에 맞는 미래를 설계했어요."
           />
         </View>
 
         {/* 카드 프리뷰 */}
         <View className="mt-5">
-          <PreviewCard />
+          <PreviewCard scene={scene} />
         </View>
 
         {/* 세부 목표 리스트 */}
         <FlatList
           className="mt-8"
-          data={GOAL_METRICS}
+          data={goalMetrics}
           numColumns={2}
           scrollEnabled={false}
           keyExtractor={(item) => item.label}
@@ -62,7 +77,7 @@ export default function GoalSummaryScreen() {
       </View>
 
       {/* 버튼 */}
-      <Button onPress={() => router.navigate("/home")}>시작하기</Button>
+      <Button isLoading={isLoading} onPress={onSubmit}>시작하기</Button>
     </View>
   );
 }

@@ -2,6 +2,105 @@ export const BODY_SIDES = ["front", "back"] as const;
 
 export type BodySide = (typeof BODY_SIDES)[number];
 
+export type BodyPartCode =
+  | "B_NECK"
+  | "B_MID_BACK_L"
+  | "B_MID_BACK_R"
+  | "B_LOWER_BACK_L"
+  | "B_LOWER_BACK_R"
+  | "B_SHOULDER_L"
+  | "B_SHOULDER_R"
+  | "B_UPPER_ARM_L"
+  | "B_UPPER_ARM_R"
+  | "B_GLUTES_L"
+  | "B_GLUTES_R"
+  | "B_THIGH_L"
+  | "B_THIGH_R"
+  | "B_KNEE_L"
+  | "B_KNEE_R"
+  | "B_CALF_L"
+  | "B_CALF_R"
+  | "F_NECK"
+  | "F_SHOULDER_L"
+  | "F_SHOULDER_R"
+  | "F_CHEST_L"
+  | "F_CHEST_R"
+  | "F_ABS"
+  | "F_OBLIQUE_L"
+  | "F_OBLIQUE_R"
+  | "F_UPPER_ARM_L"
+  | "F_UPPER_ARM_R"
+  | "F_PELVIS_L"
+  | "F_PELVIS_R"
+  | "F_THIGH_L"
+  | "F_THIGH_R"
+  | "F_KNEE_L"
+  | "F_KNEE_R"
+  | "F_SHIN_L"
+  | "F_SHIN_R"
+  | "UPPER_BACK_L"
+  | "UPPER_BACK_R"
+  | "HEAD"
+  | "FOOT_L"
+  | "FOOT_R"
+  | "LOWER_ARM_L"
+  | "LOWER_ARM_R";
+
+export type BodyPartSide = "LEFT" | "RIGHT" | null;
+export type BodyPartDirection = "FRONT" | "BACK" | null;
+
+export interface BodyPart {
+  code: BodyPartCode;
+  name: string;
+  side: BodyPartSide;
+  direction: BodyPartDirection;
+}
+
+export const BODY_PARTS: readonly BodyPart[] = [
+  { code: "B_NECK", name: "뒷목", side: null, direction: "BACK" },
+  { code: "B_MID_BACK_L", name: "등 중부", side: "LEFT", direction: "BACK" },
+  { code: "B_MID_BACK_R", name: "등 중부", side: "RIGHT", direction: "BACK" },
+  { code: "B_LOWER_BACK_L", name: "허리", side: "LEFT", direction: "BACK" },
+  { code: "B_LOWER_BACK_R", name: "허리", side: "RIGHT", direction: "BACK" },
+  { code: "B_SHOULDER_L", name: "어깨", side: "LEFT", direction: "BACK" },
+  { code: "B_SHOULDER_R", name: "어깨", side: "RIGHT", direction: "BACK" },
+  { code: "B_UPPER_ARM_L", name: "위팔(삼두)", side: "LEFT", direction: "BACK" },
+  { code: "B_UPPER_ARM_R", name: "위팔(삼두)", side: "RIGHT", direction: "BACK" },
+  { code: "B_GLUTES_L", name: "엉덩이", side: "LEFT", direction: "BACK" },
+  { code: "B_GLUTES_R", name: "엉덩이", side: "RIGHT", direction: "BACK" },
+  { code: "B_THIGH_L", name: "허벅지 뒤", side: "LEFT", direction: "BACK" },
+  { code: "B_THIGH_R", name: "허벅지 뒤", side: "RIGHT", direction: "BACK" },
+  { code: "B_KNEE_L", name: "오금", side: "LEFT", direction: "BACK" },
+  { code: "B_KNEE_R", name: "오금", side: "RIGHT", direction: "BACK" },
+  { code: "B_CALF_L", name: "종아리", side: "LEFT", direction: "BACK" },
+  { code: "B_CALF_R", name: "종아리", side: "RIGHT", direction: "BACK" },
+  { code: "F_NECK", name: "목 앞면", side: null, direction: "FRONT" },
+  { code: "F_SHOULDER_L", name: "어깨", side: "LEFT", direction: "FRONT" },
+  { code: "F_SHOULDER_R", name: "어깨", side: "RIGHT", direction: "FRONT" },
+  { code: "F_CHEST_L", name: "가슴", side: "LEFT", direction: "FRONT" },
+  { code: "F_CHEST_R", name: "가슴", side: "RIGHT", direction: "FRONT" },
+  { code: "F_ABS", name: "복부", side: null, direction: "FRONT" },
+  { code: "F_OBLIQUE_L", name: "옆구리", side: "LEFT", direction: "FRONT" },
+  { code: "F_OBLIQUE_R", name: "옆구리", side: "RIGHT", direction: "FRONT" },
+  { code: "F_UPPER_ARM_L", name: "위팔(이두)", side: "LEFT", direction: "FRONT" },
+  { code: "F_UPPER_ARM_R", name: "위팔(이두)", side: "RIGHT", direction: "FRONT" },
+  { code: "F_PELVIS_L", name: "서혜부/골반", side: "LEFT", direction: "FRONT" },
+  { code: "F_PELVIS_R", name: "서혜부/골반", side: "RIGHT", direction: "FRONT" },
+  { code: "F_THIGH_L", name: "허벅지 앞", side: "LEFT", direction: "FRONT" },
+  { code: "F_THIGH_R", name: "허벅지 앞", side: "RIGHT", direction: "FRONT" },
+  { code: "F_KNEE_L", name: "무릎 앞", side: "LEFT", direction: "FRONT" },
+  { code: "F_KNEE_R", name: "무릎 앞", side: "RIGHT", direction: "FRONT" },
+  { code: "F_SHIN_L", name: "정강이", side: "LEFT", direction: "FRONT" },
+  { code: "F_SHIN_R", name: "정강이", side: "RIGHT", direction: "FRONT" },
+  { code: "UPPER_BACK_L", name: "등 상부", side: "LEFT", direction: null },
+  { code: "UPPER_BACK_R", name: "등 상부", side: "RIGHT", direction: null },
+  { code: "HEAD", name: "머리", side: null, direction: null },
+  { code: "FOOT_L", name: "발", side: "LEFT", direction: null },
+  { code: "FOOT_R", name: "발", side: "RIGHT", direction: null },
+  { code: "LOWER_ARM_L", name: "아래팔", side: "LEFT", direction: null },
+  { code: "LOWER_ARM_R", name: "아래팔", side: "RIGHT", direction: null },
+] as const;
+
 export type BodyRegion =
   | "head"
   | "neck"
@@ -39,7 +138,77 @@ export type BodyRegion =
   | "left-heel"
   | "right-heel";
 
-export type BodyPartId = `${BodySide}-${BodyRegion}`;
+export type BodyPathId = `${BodySide}-${BodyRegion}`;
+export type BodyPartId = BodyPartCode;
+
+export const BODY_PART_CODE_BY_PATH: Partial<Record<BodyPathId, BodyPartCode>> = {
+  "front-head": "HEAD",
+  "front-neck": "F_NECK",
+  "front-left-trapezius": "UPPER_BACK_L",
+  "front-right-trapezius": "UPPER_BACK_R",
+  "front-left-shoulder": "F_SHOULDER_L",
+  "front-right-shoulder": "F_SHOULDER_R",
+  "front-left-chest": "F_CHEST_L",
+  "front-right-chest": "F_CHEST_R",
+  "front-left-upper-arm": "F_UPPER_ARM_L",
+  "front-right-upper-arm": "F_UPPER_ARM_R",
+  "front-left-inner-arm": "F_UPPER_ARM_L",
+  "front-right-inner-arm": "F_UPPER_ARM_R",
+  "front-left-forearm": "LOWER_ARM_L",
+  "front-right-forearm": "LOWER_ARM_R",
+  "front-left-abdomen": "F_OBLIQUE_L",
+  "front-right-abdomen": "F_OBLIQUE_R",
+  "front-abdomen": "F_ABS",
+  "front-left-inner-thigh": "F_PELVIS_L",
+  "front-right-inner-thigh": "F_PELVIS_R",
+  "front-left-thigh": "F_THIGH_L",
+  "front-right-thigh": "F_THIGH_R",
+  "front-left-knee": "F_KNEE_L",
+  "front-right-knee": "F_KNEE_R",
+  "front-left-calf": "F_SHIN_L",
+  "front-right-calf": "F_SHIN_R",
+  "front-left-foot": "FOOT_L",
+  "front-right-foot": "FOOT_R",
+  "back-head": "HEAD",
+  "back-neck": "B_NECK",
+  "back-left-trapezius": "UPPER_BACK_L",
+  "back-right-trapezius": "UPPER_BACK_R",
+  "back-left-shoulder": "B_SHOULDER_L",
+  "back-right-shoulder": "B_SHOULDER_R",
+  "back-left-upper-arm": "B_UPPER_ARM_L",
+  "back-right-upper-arm": "B_UPPER_ARM_R",
+  "back-left-inner-arm": "B_UPPER_ARM_L",
+  "back-right-inner-arm": "B_UPPER_ARM_R",
+  "back-left-forearm": "LOWER_ARM_L",
+  "back-right-forearm": "LOWER_ARM_R",
+  "back-left-back": "B_MID_BACK_L",
+  "back-right-back": "B_MID_BACK_R",
+  "back-left-lower-back": "B_LOWER_BACK_L",
+  "back-right-lower-back": "B_LOWER_BACK_R",
+  "back-left-glute": "B_GLUTES_L",
+  "back-right-glute": "B_GLUTES_R",
+  "back-left-thigh": "B_THIGH_L",
+  "back-right-thigh": "B_THIGH_R",
+  "back-left-knee": "B_KNEE_L",
+  "back-right-knee": "B_KNEE_R",
+  "back-left-calf": "B_CALF_L",
+  "back-right-calf": "B_CALF_R",
+  "back-left-heel": "FOOT_L",
+  "back-right-heel": "FOOT_R",
+};
+
+export const getBodyPartCode = (
+  side: BodySide,
+  region: BodyRegion,
+): BodyPartCode => {
+  const code = BODY_PART_CODE_BY_PATH[`${side}-${region}`];
+
+  if (!code) {
+    throw new Error(`Body part code is missing for ${side}-${region}.`);
+  }
+
+  return code;
+};
 
 export interface BodyPartPath {
   id: BodyRegion;

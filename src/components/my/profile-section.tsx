@@ -1,12 +1,17 @@
 import { Text, View } from "react-native";
 
-const CURRENT_CALORIES = 2800;
-const TARGET_CALORIES = 4000;
-
-export default function ProfileSection() {
+export default function ProfileSection({
+  nickname,
+  burnedCalories,
+  totalCalories,
+}: {
+  nickname: string;
+  burnedCalories: number;
+  totalCalories: number;
+}) {
   const progress = Math.min(
     100,
-    Math.max(0, (CURRENT_CALORIES / TARGET_CALORIES) * 100),
+    Math.max(0, totalCalories > 0 ? (burnedCalories / totalCalories) * 100 : 0),
   );
 
   return (
@@ -17,7 +22,7 @@ export default function ProfileSection() {
 
       <View className="flex-1 gap-2">
         <Text className="text-[14px] font-semibold text-neutral-500">
-          닉네임
+          {nickname}
         </Text>
         <View className="flex-row items-center gap-3">
           <View
@@ -27,8 +32,8 @@ export default function ProfileSection() {
             accessibilityLabel="이번 달 칼로리 목표"
             accessibilityValue={{
               min: 0,
-              max: TARGET_CALORIES,
-              now: CURRENT_CALORIES,
+              max: totalCalories,
+              now: burnedCalories,
             }}
           >
             <View
@@ -38,9 +43,9 @@ export default function ProfileSection() {
           </View>
           <Text className="text-[12px] font-semibold text-neutral-400">
             <Text className="text-primary-500">
-              {CURRENT_CALORIES.toLocaleString()}
+              {burnedCalories.toLocaleString()}
             </Text>{" "}
-            / {TARGET_CALORIES.toLocaleString()}kcal
+            / {totalCalories.toLocaleString()}kcal
           </Text>
         </View>
       </View>

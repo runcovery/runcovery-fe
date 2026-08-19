@@ -2,10 +2,11 @@ import SelectCard from "@/components/onboarding/select-card";
 import TitleSection from "@/components/onboarding/title-section";
 import StepScreenLayout from "@/components/shared/step-screen-layout";
 import Button from "@/components/ui/Button";
+import { useOnboardingRegistration } from "@/hooks/onboarding/useOnboardingRegistration";
+import { useProfileStore } from "@/stores/useProfileStore";
 import { CardData } from "@/types/onboarding/cardData";
 import { router } from "expo-router";
-import { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 const RUNNING_DATA: CardData[] = [
   {
@@ -31,7 +32,18 @@ const RUNNING_DATA: CardData[] = [
 ];
 
 export default function RunningExperienceScreen() {
-  const [selectedId, setSelectedId] = useState(0);
+  const { errorMessage, isSubmitting, profile, registerUser } =
+    useOnboardingRegistration();
+  const setProfileField = useProfileStore((state) => state.setProfileField);
+  const { nickname, runningExperience } = profile;
+
+  const handleNext = async () => {
+    const isRegistered = await registerUser();
+
+    if (isRegistered) {
+      router.push("/onboarding/goal/setup");
+    }
+  };
 
   return (
     <View className="flex-1">
@@ -45,7 +57,7 @@ export default function RunningExperienceScreen() {
             {/* 타이틀 */}
             <View className="items-start w-full mt-3">
               <TitleSection
-                title={"00님에 대해서 자세히 알아볼게요!"}
+                title={`${nickname}님에 대해서 자세히 알아볼게요!`}
                 subTitle="러닝을 얼마나 해보셨나요?"
               />
             </View>
@@ -57,16 +69,26 @@ export default function RunningExperienceScreen() {
                   key={item.id}
                   item={item}
                   onPress={() =>
-                    setSelectedId(selectedId === item.id ? 0 : item.id)
+                    setProfileField(
+                      "runningExperience",
+                      runningExperience === item.title ? "" : item.title,
+                    )
                   }
-                  selected={selectedId === item.id}
+                  selected={runningExperience === item.title}
                 />
               ))}
             </View>
 
             {/* 버튼 */}
             <View className="w-full mt-7">
-              <Button onPress={() => router.push("/onboarding/goal/setup")}>
+              {errorMessage ? (
+                <Text className="mb-3 text-center text-error">{errorMessage}</Text>
+              ) : null}
+              <Button
+                disabled={!runningExperience}
+                isLoading={isSubmitting}
+                onPress={handleNext}
+              >
                 다음
               </Button>
             </View>

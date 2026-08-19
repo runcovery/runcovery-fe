@@ -1,8 +1,9 @@
 import { Image, Text, View } from "react-native";
 import OutlineCard from "../shared/outline-card";
 import Label from "../ui/label";
+import type { WeeklyGoalResponse } from "@/types/mission";
 
-const GoalItem = () => {
+const GoalItem = ({ children }: { children: string }) => {
   return (
     <View className="flex flex-row items-center gap-2">
       <Image
@@ -10,13 +11,13 @@ const GoalItem = () => {
         className="w-6 h-6"
       />
       <Text className="text-[12px] font-medium text-neutral-600">
-        고강도 인터벌 러닝 (트레드밀/평지)
+        {children}
       </Text>
     </View>
   );
 };
 
-export default function WeeklyGoalCard() {
+export default function WeeklyGoalCard({ goal }: { goal?: WeeklyGoalResponse }) {
   return (
     <View>
       <Text className="text-[14px] font-semibold text-black ml-4">
@@ -27,16 +28,15 @@ export default function WeeklyGoalCard() {
           <View>
             <Label text="주간 목표" bg="bg-[#298DFF]" />
             <Text className="text-[14px] font-semibold text-black ml-2 mt-2">
-              1230 칼로리 소모하기{"\n"}
-              목표 페이스(5'00") 체감하기 및 기초 체력 향상
+              {goal ? `${goal.expectedCalories.toLocaleString()} 칼로리 · ${goal.weeklyGoalDistance}km\n${goal.weeklyGoal}` : "아직 생성된 주간 목표가 없어요."}
             </Text>
           </View>
           <View className="mt-3">
             <Label text="스케줄 구성" bg="bg-primary-310" />
             <View className="gap-6 mt-4">
-              <GoalItem />
-              <GoalItem />
-              <GoalItem />
+              {goal?.schedules.map((schedule) => (
+                <GoalItem key={schedule.trainingId}>{schedule.trainingContent}</GoalItem>
+              ))}
             </View>
           </View>
         </OutlineCard>

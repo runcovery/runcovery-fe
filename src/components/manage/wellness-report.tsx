@@ -2,33 +2,11 @@ import { ScrollView, Text, View } from "react-native";
 import PrescriptionCard from "./prescription-card";
 import WellnessCenterCard from "./wellness-center-card";
 import type { Prescription, WellnessCenter } from "./wellness-report.types";
-
-const PRESCRIPTIONS: Prescription[] = [
-  {
-    id: "hydration",
-    category: "수분/영양",
-    tone: "nutrition",
-    title: "땀 배출량이 최고 수준입니다.",
-    description:
-      "땀 배출량이 많기 때문에 지금 즉시 수분 500ml와 전해질을 보충해 근손실을 막으세요.",
-  },
-  {
-    id: "skin",
-    category: "피부/두피",
-    tone: "skin",
-    title: "야외 러닝으로 자외선 노출 및 열감이 심합니다.",
-    description: "모공 확장을 막기 위해 즉각적인 쿨링 세안이 필요합니다.",
-    actionLabel: "피부 진단 보기",
-  },
-  {
-    id: "stretching",
-    category: "스트레칭",
-    tone: "stretching",
-    title: "허벅지 부분이 계속적으로 불편합니다.",
-    description: "아픈 부위에 폼롤러로 스트레칭을 근육을 풀어주면 좋습니다.",
-    actionLabel: "영상 보러 가기",
-  },
-];
+import type { ReportResponse } from "@/types/wellness";
+import { useQuery } from "@tanstack/react-query";
+import { getPrescriptions } from "@/apis/wellness";
+import { router } from "expo-router";
+import { getApiErrorMessage } from "@/apis";
 
 const WELLNESS_CENTERS: WellnessCenter[] = [
   {
@@ -48,10 +26,42 @@ const WELLNESS_CENTERS: WellnessCenter[] = [
   },
 ];
 
-export default function WellnessReport() {
+export default function WellnessReport({ report }: { report: ReportResponse }) {
+  const prescriptionsQuery = useQuery({
+    queryKey: ["wellness", "prescriptions", "latest"],
+    queryFn: () => getPrescriptions(),
+  });
+  const fallbackPrescriptions: Prescription[] = [
+    { id: "hydration", category: "수분/영양", tone: "nutrition", title: report.hydration.title, description: report.hydration.solution },
+    { id: "skin", category: "피부/두피", tone: "skin", title: report.skin.title, description: report.skin.solution },
+    { id: "stretching", category: "스트레칭", tone: "stretching", title: report.stretching.title, description: report.stretching.solution },
+  ];
+  const prescriptions: Prescription[] = prescriptionsQuery.data?.map((item) => {
+    const hasDetailScreen = item.category !== "NUTRITION";
+
+    return {
+      id: item.prescriptionId,
+      category: item.categoryName,
+      tone: item.category === "NUTRITION" ? "nutrition" : item.category === "SKIN" ? "skin" : "stretching",
+      title: item.title,
+      description: item.summary,
+      actionLabel: hasDetailScreen
+        ? item.isCompleted
+          ? "관리 완료됨"
+          : "자세히 보기"
+        : undefined,
+      onPress: hasDetailScreen
+        ? () => router.push({
+            pathname: "/manage/prescriptions/[prescriptionId]",
+            params: { prescriptionId: String(item.prescriptionId) },
+          })
+        : undefined,
+    };
+  }) ?? fallbackPrescriptions;
   return (
     <ScrollView
       className="flex-1 w-full"
+      contentContainerStyle={{ paddingBottom: 24 }}
       showsVerticalScrollIndicator={false}
     >
       <Text className="mt-3 text-[20px] font-semibold text-neutral-950">
@@ -59,10 +69,15 @@ export default function WellnessReport() {
       </Text>
 
       <View className="mt-4 gap-4">
-        {PRESCRIPTIONS.map((prescription) => (
+        {prescriptions.map((prescription) => (
           <PrescriptionCard key={prescription.id} prescription={prescription} />
         ))}
       </View>
+      {prescriptionsQuery.isError ? (
+        <Text className="mt-3 text-center text-[12px] text-error">
+          {getApiErrorMessage(prescriptionsQuery.error, "상세 처방전 정보를 불러오지 못했습니다.")}
+        </Text>
+      ) : null}
 
       <Text className="mt-7 text-[18px] font-semibold text-neutral-950">
         더 완벽하고 빠른 회복을 원한다면?

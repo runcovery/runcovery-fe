@@ -1,5 +1,6 @@
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Button from "../ui/Button";
+import AnimatedPinkCat from "./animated-pink-cat";
 
 interface LoadingScreenProps {
   title: string;
@@ -18,10 +19,10 @@ export default function LoadingScreen({
 }: LoadingScreenProps) {
   if (error) {
     return (
-      <View className="flex-1 w-full justify-center gap-6">
+      <View className="w-full flex-1 justify-center gap-6">
         <View className="items-center gap-2">
           <Text className="text-[20px] font-semibold text-neutral-950">
-            리포트를 만들지 못했어요.
+            요청을 완료하지 못했어요.
           </Text>
           <Text className="text-center text-[14px] font-medium text-neutral-300">
             {error}
@@ -33,23 +34,19 @@ export default function LoadingScreen({
   }
 
   return (
-    <View className="flex-1 w-full">
+    <View className="w-full flex-1">
       <View className="mt-3">
         <View className="w-full gap-1">
-          <Text className="text-[20px] font-semibold text-black whitespace-pre-wrap">
+          <Text className="whitespace-pre-wrap text-[20px] font-semibold text-black">
             {title}
           </Text>
-          <Text className="text-neutral-300 will-change-variable text-[14px] font-medium whitespace-pre-wrap">
+          <Text className="whitespace-pre-wrap text-[14px] font-medium text-neutral-300 will-change-variable">
             {subTitle}
           </Text>
         </View>
       </View>
-      <View className="flex-1 w-full items-center justify-center gap-12 py-8">
-        <Image
-          source={require("../../../assets/images/character/goal-pink-cat.png")}
-          className="w-43 h-51"
-          resizeMode="contain"
-        />
+      <View className="w-full flex-1 items-center justify-center gap-12 py-8">
+        <AnimatedPinkCat width={172} />
         <Text className="text-[14px] font-medium text-neutral-700">{text}</Text>
       </View>
     </View>

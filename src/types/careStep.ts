@@ -4,6 +4,7 @@ export type StepType =
   | CheckType
   | "pain"
   | "summary"
+  | "skin"
   | "loading"
   | "intensity"
   | "report";

@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
-import type { StyleProp, ViewStyle } from "react-native";
+import { ReactNode, useCallback } from "react";
+import { BackHandler, type StyleProp, type ViewStyle } from "react-native";
 import { Edge } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 import GradientScreenLayout from "./gradient-screen-layout";
 import ScreenContainer from "./screen-container";
 import ScreenHeader from "./screen-header";
@@ -22,6 +23,22 @@ export default function StepScreenLayout({
   edges,
   contentContainerStyle,
 }: StepScreenLayoutProps) {
+  useFocusEffect(
+    useCallback(() => {
+      if (!onBack) return undefined;
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          onBack();
+          return true;
+        },
+      );
+
+      return () => subscription.remove();
+    }, [onBack]),
+  );
+
   return (
     <GradientScreenLayout offsetY={offsetY} edges={edges}>
       <ScreenContainer style={contentContainerStyle}>

@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Image, View } from "react-native";
@@ -10,8 +9,6 @@ const LOADING_DURATION_MS = 2000;
 
 export default function LandingScreen() {
   useEffect(() => {
-    void SplashScreen.hideAsync();
-
     const navigationTimer = setTimeout(() => {
       router.replace("/onboarding");
     }, LOADING_DURATION_MS);

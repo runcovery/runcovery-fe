@@ -1,4 +1,5 @@
 import Button from "@/components/ui/Button";
+import type { RunningIntensity } from "@/types/wellness";
 import {
   Image,
   ScrollView,
@@ -13,6 +14,18 @@ const GAUGE_SEGMENTS = [
   { d: "M95 47.4 A130 130 0 0 1 225 47.4", color: "#A495F6" },
   { d: "M225 47.4 A130 130 0 0 1 290 160", color: "#725AF5" },
 ] as const;
+
+const LEVEL_POSITION: Record<RunningIntensity["level"], number> = {
+  LOW: 0.18,
+  MODERATE: 0.5,
+  HIGH: 0.82,
+};
+
+const LEVEL_LABEL: Record<RunningIntensity["level"], string> = {
+  LOW: "저강도",
+  MODERATE: "중강도",
+  HIGH: "고강도",
+};
 
 interface RunningIntensityAnalysisProps {
   onPressReport: () => void;
@@ -36,20 +49,26 @@ function WarningIcon() {
   );
 }
 
-function IntensityGauge() {
+function IntensityGauge({ intensity }: { intensity: RunningIntensity }) {
   const { width: screenWidth } = useWindowDimensions();
   const gaugeWidth = Math.min(320, screenWidth - 64);
   const gaugeHeight = (gaugeWidth / 320) * 205;
+  const contentWidth = screenWidth - 64;
+  const gaugeOffset = Math.max(0, (contentWidth - gaugeWidth) / 2);
+  const catWidth = 92;
+  const catLeft =
+    gaugeOffset + gaugeWidth * LEVEL_POSITION[intensity.level] - catWidth / 2;
 
   return (
     <View
       className="relative w-full items-center"
       style={{ height: gaugeHeight + 30 }}
-      accessibilityLabel="오늘의 러닝 강도: 고강도"
+      accessibilityLabel={`오늘의 러닝 강도: ${LEVEL_LABEL[intensity.level]}, ${intensity.score}점`}
     >
       <Image
         source={require("../../../assets/images/character/lying-pink-cat.png")}
         className="absolute z-10 h-14 w-23"
+        style={{ left: catLeft }}
         resizeMode="contain"
       />
       <Svg
@@ -70,7 +89,7 @@ function IntensityGauge() {
         ))}
       </Svg>
       <Text className="absolute bottom-8 text-[20px] font-semibold text-neutral-950">
-        고강도
+        {LEVEL_LABEL[intensity.level]} · {intensity.score}점
       </Text>
     </View>
   );
@@ -78,7 +97,8 @@ function IntensityGauge() {
 
 export default function RunningIntensityAnalysis({
   onPressReport,
-}: RunningIntensityAnalysisProps) {
+  intensity,
+}: RunningIntensityAnalysisProps & { intensity: RunningIntensity }) {
   return (
     <ScrollView
       className="flex-1 w-full"
@@ -92,7 +112,7 @@ export default function RunningIntensityAnalysis({
           </Text>
 
           <View className="mt-6">
-            <IntensityGauge />
+            <IntensityGauge intensity={intensity} />
           </View>
 
           <View className="mt-7 flex-row gap-3 rounded-[20px] border border-primary-440 bg-white px-4 py-5 shadow-[0_2px_4px_rgba(0,0,0,0.08)]">
@@ -101,11 +121,9 @@ export default function RunningIntensityAnalysis({
             </View>
             <Text className="min-w-0 flex-1 text-[13px] font-medium leading-6 text-neutral-700">
               <Text className="font-semibold text-primary-500">
-                오버트레이닝 경고 :
+                러닝 분석 :
               </Text>{" "}
-              어제 수면이 부족한 상태에서 평균 심박수 150 이상의 고강도
-              훈련을 강행했습니다. 현재 신체 피로도와 안면 열감이 극심한
-              상태입니다.
+              {intensity.comment}
             </Text>
           </View>
 

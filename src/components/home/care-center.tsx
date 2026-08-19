@@ -1,16 +1,42 @@
-import { Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import {
+  ImageBackground,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-export default function CareCenterCard() {
+interface CareCenterCardProps {
+  title: string;
+  subTitle: string;
+  img: ImageSourcePropType;
+}
+
+export default function CareCenterCard({
+  title,
+  subTitle,
+  img,
+}: CareCenterCardProps) {
   return (
-    <View className="flex-1 min-w-0 aspect-square border rounded-lg relative">
-      <View className="gap-1 absolute bottom-3 inset-x-3">
-        <Text className="text-[16px] font-semibold text-white">
-          웰니스 서울
+    <ImageBackground
+      source={img}
+      resizeMode="cover"
+      className="h-40 w-40 overflow-hidden rounded-2xl"
+    >
+      <LinearGradient
+        colors={["rgba(0,0,0,0.02)", "rgba(0,0,0,0.68)"]}
+        locations={[0.35, 1]}
+        style={StyleSheet.absoluteFill}
+      />
+      <View className="absolute inset-x-4 bottom-4 gap-1.5">
+        <Text className="text-[18px] font-semibold text-white" numberOfLines={1}>
+          {title}
         </Text>
-        <Text className="text-[10px] font-semibold text-white">
-          장소 상세 주소
+        <Text className="text-[12px] font-medium text-white" numberOfLines={1}>
+          {subTitle}
         </Text>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
