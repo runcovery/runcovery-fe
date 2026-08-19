@@ -1,8 +1,9 @@
+import type { MissionResponse } from "@/types/mission";
 import { Image, Text, View } from "react-native";
 import OutlineCard from "../shared/outline-card";
 import Label from "../ui/label";
 
-const GoalItem = () => {
+const GoalItem = ({ children }: { children: string }) => {
   return (
     <View className="flex flex-row items-center gap-2">
       <Image
@@ -10,13 +11,17 @@ const GoalItem = () => {
         className="w-6 h-6"
       />
       <Text className="text-[12px] font-medium text-neutral-600">
-        숨이 약간 찰 정도, 짧은 대답만 가능
+        {children}
       </Text>
     </View>
   );
 };
 
-export default function DailyGoalCard() {
+export default function DailyGoalCard({
+  mission,
+}: {
+  mission?: MissionResponse;
+}) {
   return (
     <View>
       <Text className="text-[14px] font-semibold text-black ml-4">
@@ -25,15 +30,24 @@ export default function DailyGoalCard() {
       <View className="mt-3">
         <OutlineCard py="py-5">
           <Label text="일일 미션" bg="bg-secondary-400" />
-          {/* <Text className="py-10 text-[14px] font-medium text-center text-black whitespace-pre-wrap">
-            오늘의 미션을 받으려면 컨디션 체크를{"\n"} 받아야해요.
-          </Text> */}
-          <Text className="text-[14px] font-semibold text-black mt-2 ml-4">
-            중 · 고강도 러닝
+          <Text className="text-[14px] font-semibold text-black mt-2 ml-4 text-center">
+            {mission?.isRest
+              ? "오늘은 회복에 집중해요"
+              : (mission?.recommendedIntensity ??
+                "오늘의 미션을 받으려면 컨디션 체크를 \n받아야해요")}
           </Text>
           <View className="mt-3 gap-3">
-            <GoalItem />
-            <GoalItem />
+            {mission ? (
+              <>
+                <GoalItem>{mission.recommendedTime}</GoalItem>
+                <GoalItem>
+                  {mission.recommendedZone === "오늘은 휴식을 취하세요."
+                    ? mission.recommendedZoneDesc
+                    : `${mission.recommendedZone} · ${mission.recommendedZoneDesc}`}
+                </GoalItem>
+                <GoalItem>{mission.detailComment}</GoalItem>
+              </>
+            ) : null}
           </View>
         </OutlineCard>
       </View>

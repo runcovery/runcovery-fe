@@ -1,12 +1,13 @@
 import { Text, View } from "react-native";
 
-const CARE_STATUS = [
-  { label: "컨디션 체크", progress: 100 },
-  { label: "피부상태 관리", progress: 70 },
-  { label: "스트레칭 관리", progress: 70 },
-] as const;
-
-export default function CareStatusSection() {
+export default function CareStatusSection({ conditionRate, skinRate, stretchRate, feedback }: { conditionRate: number; skinRate: number; stretchRate: number; feedback: string }) {
+  const normalizeRate = (value: number) =>
+    Math.round(Math.min(100, Math.max(0, value)));
+  const careStatus = [
+    { label: "컨디션 체크", progress: normalizeRate(conditionRate) },
+    { label: "피부상태 관리", progress: normalizeRate(skinRate) },
+    { label: "스트레칭 관리", progress: normalizeRate(stretchRate) },
+  ];
   return (
     <View>
       <Text className="text-[16px] font-semibold text-neutral-400">
@@ -14,7 +15,7 @@ export default function CareStatusSection() {
       </Text>
 
       <View className="mt-4 flex-row gap-3">
-        {CARE_STATUS.map(({ label, progress }) => (
+        {careStatus.map(({ label, progress }) => (
           <View
             key={label}
             className="h-24 flex-1 justify-between rounded-[18px] border border-neutral-100 bg-white px-4 py-4 shadow-[0_3px_5px_rgba(0,0,0,0.1)]"
@@ -33,8 +34,8 @@ export default function CareStatusSection() {
 
       <View className="mt-5 flex-row items-center rounded-2xl border border-primary-500 bg-white px-5 py-4 shadow-[0_2px_4px_rgba(0,0,0,0.08)]">
         <Text className="mr-2 text-[14px]">✨</Text>
-        <Text className="text-[14px] font-semibold text-neutral-500">
-          사후 관리에 대한 피드백 작성입니다.
+        <Text className="flex-1 text-[14px] font-semibold leading-6 text-neutral-500">
+          {feedback}
         </Text>
       </View>
     </View>

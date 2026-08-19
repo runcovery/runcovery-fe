@@ -8,3 +8,5 @@ export interface ApiResponse<Data> {
 export interface ApiPayload<Payload> {
   payload: Payload;
 }
+
+export type AsyncStatus = "idle" | "loading" | "success" | "error";

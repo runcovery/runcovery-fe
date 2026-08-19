@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import Svg, { Ellipse, Path, Polygon } from "react-native-svg";
+import Svg, { Ellipse, G, Path, Polygon } from "react-native-svg";
 import {
   BACK_PARTS,
   BODY_COLORS,
@@ -39,33 +39,60 @@ export default function BodyFigure({
     <View className="flex-1 items-center">
       <Svg width={width} height={height} viewBox="0 0 150 350">
         {side === "front" ? (
-          <Ellipse
-            cx="75"
-            cy="18"
-            rx="13"
-            ry="16"
-            fill={color("head", true)}
-            onPress={toggle("head")}
-          />
+          <G>
+            <Ellipse
+              cx="75"
+              cy="18"
+              rx="13"
+              ry="16"
+              fill={color("head", true)}
+              pointerEvents="none"
+            />
+            <Ellipse
+              cx="75"
+              cy="18"
+              rx="18"
+              ry="21"
+              fill="transparent"
+              onPressIn={toggle("head")}
+            />
+          </G>
         ) : (
-          <Polygon
-            points="64,7 75,3 86,7 90,14 89,27 83,38 67,38 61,27 60,14"
-            fill={color("head", true)}
-            onPress={toggle("head")}
-          />
+          <G>
+            <Polygon
+              points="64,7 75,3 86,7 90,14 89,27 83,38 67,38 61,27 60,14"
+              fill={color("head", true)}
+              pointerEvents="none"
+            />
+            <Polygon
+              points="59,4 75,0 91,4 95,14 94,30 86,43 64,43 56,30 55,14"
+              fill="transparent"
+              onPressIn={toggle("head")}
+            />
+          </G>
         )}
 
         {parts.map((part) => (
-          <Path
-            key={part.id}
-            d={part.d}
-            fill={color(part.id, part.dark)}
-            onPress={toggle(part.id)}
-            stroke={BODY_COLORS.line}
-            strokeWidth={side === "front" ? 3 : 2}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
+          <G key={part.id}>
+            <Path
+              d={part.d}
+              fill={color(part.id, part.dark)}
+              stroke={BODY_COLORS.line}
+              strokeWidth={side === "front" ? 3 : 2}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              pointerEvents="none"
+            />
+            <Path
+              d={part.d}
+              fill="transparent"
+              stroke="transparent"
+              strokeWidth={12}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              onPressIn={toggle(part.id)}
+            />
+          </G>
         ))}
       </Svg>
       <Text className="mt-10 text-[14px] font-medium text-neutral-950">

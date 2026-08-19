@@ -7,18 +7,12 @@
       "policy": "fingerprint"
     },
     "orientation": "portrait",
-    "icon": "./assets/expo.icon/Assets/app-icon-square.png",
     "scheme": "runcovery",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon/Assets/app-icon-square.png",
       "bundleIdentifier": "com.jjong0923.runcoveryfe"
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff",
-        "foregroundImage": "./assets/expo.icon/Assets/app-icon-foreground.png"
-      },
       "predictiveBackGestureEnabled": false,
       "package": "com.jjong0923.runcoveryfe"
     },
@@ -27,34 +21,10 @@
       "favicon": "./assets/expo.icon/Assets/app-icon-square.png"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#FFFFFF",
-          "image": "./assets/images/logo.png",
-          "imageWidth": 190,
-          "resizeMode": "contain"
-        }
-      ],
-      [
-        "expo-location",
-        {
-          "locationWhenInUsePermission": "현재 위치를 기반으로 날씨와 홈 정보를 제공하기 위해 위치 권한이 필요합니다."
-        }
-      ],
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "신체 상태를 확인하기 위해 카메라 접근 권한이 필요합니다.",
-          "recordAudioAndroid": false,
-          "barcodeScannerEnabled": false
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
     },
     "extra": {
       "router": {},

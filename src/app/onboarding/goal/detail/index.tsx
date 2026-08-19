@@ -10,11 +10,13 @@ import {
 } from "@/hooks/onboarding/useGoalDetailFlow";
 import { router } from "expo-router";
 import { ReactNode } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 export default function GoalDetailScreen() {
   const {
     goal,
+    errorMessage,
+    goBack,
     goToSummary,
     handleChooseNext,
     handleFormNext,
@@ -27,6 +29,7 @@ export default function GoalDetailScreen() {
     selectedId,
     setSelectedId,
     step,
+    submittingAction,
     submitGoal,
     updateGoalPlan,
   } = useGoalDetailFlow();
@@ -39,20 +42,38 @@ export default function GoalDetailScreen() {
     }
   };
 
+  const handleBack = () => {
+    if (!goBack()) router.back();
+  };
+
   const stepComponents: Record<GoalDetailStep, ReactNode> = {
     Choose: (
       <ChooseStepScreen
+        isLoading={isSubmitting}
         selectedId={selectedId}
         onSelect={setSelectedId}
         onNext={handleChooseNext}
       />
     ),
     Form: (
-      <GoalDetailFormScreen onChange={updateGoalPlan} onNext={handleFormNext} />
+      <GoalDetailFormScreen
+        isLoading={isSubmitting}
+        onChange={updateGoalPlan}
+        onNext={handleFormNext}
+      />
     ),
     Scene: (
       <SceneRecommendScreen
+        isLoading={isSubmitting}
+        loadingAction={
+          submittingAction === "sceneNext"
+            ? "next"
+            : submittingAction === "refresh"
+              ? "refresh"
+              : null
+        }
         scenes={scenes}
+        selectedScene={selectedScene}
         selectedId={selectedId}
         onSceneChange={handleSceneChange}
         onNext={handleSceneNext}
@@ -69,7 +90,7 @@ export default function GoalDetailScreen() {
     ),
     Summary: (
       <GoalSummaryScreen
-        disabled={isSubmitting}
+        isLoading={isSubmitting}
         goal={goal}
         onSubmit={handleSubmit}
         scene={selectedScene}
@@ -82,8 +103,11 @@ export default function GoalDetailScreen() {
       className="flex-1"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <StepScreenLayout>
-        <View className="flex-1 w-full">{stepComponents[step]}</View>
+      <StepScreenLayout onBack={handleBack}>
+        <View className="flex-1 w-full">
+          {errorMessage ? <Text className="mb-3 text-center text-error">{errorMessage}</Text> : null}
+          {stepComponents[step]}
+        </View>
       </StepScreenLayout>
     </KeyboardAvoidingView>
   );

@@ -1,7 +1,11 @@
-import { publicApi } from "..";
+import { api, publicApi } from "..";
 
 import type { ApiPayload, ApiResponse } from "@/types/api";
-import type { UserCreatePayload, UserCreateResponse } from "@/types/user";
+import type {
+  MyStatsResponse,
+  UserCreatePayload,
+  UserCreateResponse,
+} from "@/types/user";
 
 // 유저 등록
 export const createUser = async ({
@@ -13,4 +17,9 @@ export const createUser = async ({
   );
 
   return res;
+};
+
+export const getMyStats = async () => {
+  const { data } = await api.get<ApiResponse<MyStatsResponse>>("/users/mypage");
+  return data.data;
 };

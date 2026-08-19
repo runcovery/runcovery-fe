@@ -4,13 +4,21 @@ import Button from "@/components/ui/Button";
 import InputField from "@/components/ui/input-field";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { router } from "expo-router";
-import { useState } from "react";
-import { KeyboardAvoidingView, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 
 export default function ProfileSetupScreen() {
   const profile = useProfileStore((state) => state.profile);
   const setProfileField = useProfileStore((state) => state.setProfileField);
-  const [shouldLiftForm, setShouldLiftForm] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const focusedBottomFieldRef = useRef<"height" | "weight" | null>(null);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [genderInput, setGenderInput] = useState(
     profile.gender === "male" ? "남" : profile.gender === "female" ? "여" : "",
   );
@@ -46,16 +54,65 @@ export default function ProfileSetupScreen() {
     profile.height > 0 &&
     profile.weight > 0;
 
+  const scrollToBottomFields = (field: "height" | "weight") => {
+    focusedBottomFieldRef.current = field;
+
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  };
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardVisible(true);
+
+      if (focusedBottomFieldRef.current) {
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 50);
+      }
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      focusedBottomFieldRef.current = null;
+      setIsKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <KeyboardAvoidingView
       className="flex-1"
-      behavior="position"
-      enabled={shouldLiftForm}
-      contentContainerStyle={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <GradientScreenLayout offsetY={120}>
-        <View className="flex-1 px-8 pt-16 pb-24">
-          <View className="items-center gap-6">
+        <ScrollView
+          ref={scrollViewRef}
+          className="flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: 32,
+            paddingTop: 64,
+            paddingBottom: isKeyboardVisible ? 420 : 120,
+          }}
+          automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          onContentSizeChange={() => {
+            if (
+              isKeyboardVisible &&
+              focusedBottomFieldRef.current === "weight"
+            ) {
+              scrollViewRef.current?.scrollToEnd({ animated: true });
+            }
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="flex-1">
+            <View className="items-center gap-6">
             {/* 타이틀 */}
             <TitleSection
               title="사용자님에 대해서 알려주세요."
@@ -69,7 +126,6 @@ export default function ProfileSetupScreen() {
                 placeholder="닉네임을 입력해 주세요."
                 value={profile.nickname}
                 onChangeText={(value) => setProfileField("nickname", value)}
-                onPressIn={() => setShouldLiftForm(false)}
               />
               <InputField
                 label="나이"
@@ -79,14 +135,12 @@ export default function ProfileSetupScreen() {
                   setProfileField("age", Number(value) || 0)
                 }
                 keyboardType="number-pad"
-                onPressIn={() => setShouldLiftForm(false)}
               />
               <InputField
                 label="성별"
                 placeholder="성별을 입력해 주세요."
                 value={genderInput}
                 onChangeText={handleGenderChange}
-                onPressIn={() => setShouldLiftForm(false)}
               />
               <InputField
                 label="키"
@@ -96,7 +150,7 @@ export default function ProfileSetupScreen() {
                   setProfileField("height", Number(value) || 0)
                 }
                 keyboardType="decimal-pad"
-                onPressIn={() => setShouldLiftForm(true)}
+                onFocus={() => scrollToBottomFields("height")}
               />
               <InputField
                 label="몸무게"
@@ -106,7 +160,7 @@ export default function ProfileSetupScreen() {
                   setProfileField("weight", Number(value) || 0)
                 }
                 keyboardType="decimal-pad"
-                onPressIn={() => setShouldLiftForm(true)}
+                onFocus={() => scrollToBottomFields("weight")}
               />
             </View>
 
@@ -117,8 +171,9 @@ export default function ProfileSetupScreen() {
             >
               다음
             </Button>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </GradientScreenLayout>
     </KeyboardAvoidingView>
   );

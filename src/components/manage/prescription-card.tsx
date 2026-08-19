@@ -15,7 +15,13 @@ export default function PrescriptionCard({
   prescription,
 }: PrescriptionCardProps) {
   return (
-    <View className="rounded-[22px] border border-primary-440 bg-white px-5 py-4 shadow-[0_2px_4px_rgba(0,0,0,0.08)]">
+    <Pressable
+      onPress={prescription.onPress}
+      disabled={!prescription.onPress}
+      accessibilityRole={prescription.onPress ? "button" : undefined}
+      accessibilityLabel={prescription.onPress ? `${prescription.category} 처방전 자세히 보기` : undefined}
+      className="rounded-[22px] border border-primary-440 bg-white px-5 py-4 shadow-[0_2px_4px_rgba(0,0,0,0.08)] active:opacity-80"
+    >
       <View
         className={[
           "self-start rounded-lg px-4 py-1",
@@ -35,17 +41,12 @@ export default function PrescriptionCard({
       </Text>
 
       {prescription.actionLabel ? (
-        <Pressable
-          className="mt-3 self-end"
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={prescription.actionLabel}
-        >
+        <View className="mt-3 self-end">
           <Text className="text-[12px] font-medium text-primary-500">
             {prescription.actionLabel} {">"}
           </Text>
-        </Pressable>
+        </View>
       ) : null}
-    </View>
+    </Pressable>
   );
 }

@@ -7,9 +7,11 @@ import TitleSection from "../title-section";
 import FormInputField from "./form-input-field";
 
 export default function GoalDetailFormScreen({
+  isLoading,
   onChange,
   onNext,
 }: {
+  isLoading: boolean;
   onChange: (goalPlan: GoalPlanPayload) => void;
   onNext: () => void;
 }) {
@@ -22,20 +24,17 @@ export default function GoalDetailFormScreen({
   const nickname = useProfileStore((state) => state.profile.nickname);
 
   const handleChange = (field: keyof typeof goalDetails, value: string) => {
-    setGoalDetails((prev) => {
-      const next = {
-        ...prev,
-        [field]: value,
-      };
+    const next = {
+      ...goalDetails,
+      [field]: value,
+    };
 
-      onChange({
-        targetDistance: Number(next.distance),
-        targetPeriod: Number(next.duration),
-        weeklyFrequency: Number(next.weeklyCount),
-        availableTime: Number(next.availableTime),
-      });
-
-      return next;
+    setGoalDetails(next);
+    onChange({
+      targetDistance: Number(next.distance),
+      targetPeriod: Number(next.duration),
+      weeklyFrequency: Number(next.weeklyCount),
+      availableTime: Number(next.availableTime),
     });
   };
 
@@ -96,7 +95,7 @@ export default function GoalDetailFormScreen({
         </View>
 
         {/* 버튼 */}
-        <Button onPress={onNext}>다음</Button>
+        <Button isLoading={isLoading} onPress={onNext}>다음</Button>
       </View>
     </ScrollView>
   );

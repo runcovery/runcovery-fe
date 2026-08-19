@@ -1,10 +1,13 @@
 import { api } from "..";
+import type { ApiResponse } from "@/types/api";
+import type { MissionResponse } from "@/types/mission";
 
 // 미션 조회
 export const getMissions = async () => {
-  const res = await api.get("/missions/today");
-
-  return res;
+  const { data } = await api.get<ApiResponse<MissionResponse>>(
+    "/missions/today",
+  );
+  return data.data;
 };
 
 // 미션 생성
@@ -15,7 +18,10 @@ export const createMissions = async ({
   lat: number;
   lon: number;
 }) => {
-  const res = await api.post("/missions/generate", { params: { lat, lon } });
-
-  return res;
+  const { data } = await api.post<ApiResponse<MissionResponse>>(
+    "/missions/generate",
+    undefined,
+    { params: { lat, lon } },
+  );
+  return data.data;
 };

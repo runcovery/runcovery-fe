@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
+import type { KeyboardTypeOptions, TextInputProps } from "react-native";
 import {
-  KeyboardTypeOptions,
   Pressable,
   Text,
   TextInput,
@@ -15,6 +15,7 @@ interface FormInputFieldProps {
   keyboardType?: KeyboardTypeOptions;
   prefix?: string;
   suffix?: string;
+  onFocus?: TextInputProps["onFocus"];
 }
 
 export default function FormInputField({
@@ -25,6 +26,7 @@ export default function FormInputField({
   keyboardType,
   prefix,
   suffix,
+  onFocus,
 }: FormInputFieldProps) {
   const hasValue = value.trim().length > 0;
   const [isFocused, setIsFocused] = useState(false);
@@ -54,7 +56,10 @@ export default function FormInputField({
           value={value}
           onChangeText={onChangeText}
           keyboardType={keyboardType}
-          onFocus={() => setIsFocused(true)}
+          onFocus={(event) => {
+            setIsFocused(true);
+            onFocus?.(event);
+          }}
           onBlur={() => setIsFocused(false)}
           style={
             hasValue ? { width: Math.max(10, value.length * 8.5) } : { flex: 1 }

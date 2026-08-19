@@ -9,13 +9,19 @@ import FormInputField from "./form-input-field";
 import PreviewCard from "./preview-card";
 
 export default function SceneRecommendScreen({
+  isLoading,
+  loadingAction,
   scenes,
+  selectedScene,
   selectedId,
   onSceneChange,
   onNext,
   onRefresh,
 }: {
+  isLoading: boolean;
+  loadingAction: "next" | "refresh" | null;
   scenes: RecommendedScene[];
+  selectedScene: RecommendedScene | null;
   selectedId: number;
   onSceneChange: (scene: RecommendedScene | string) => void;
   onNext: () => void;
@@ -24,7 +30,10 @@ export default function SceneRecommendScreen({
   const [customScene, setCustomScene] = useState("");
   const nickname = useProfileStore((state) => state.profile.nickname);
   const mainScene = scenes.find((scene) => scene.sceneId === "main") ?? null;
-  const alternativeScenes = scenes.filter((scene) => scene.sceneId !== "main");
+  const previewScene = selectedScene ?? mainScene;
+  const alternativeScenes = scenes.filter(
+    (scene) => scene.sceneId !== previewScene?.sceneId,
+  );
 
   return (
     <ScrollView
@@ -46,7 +55,7 @@ export default function SceneRecommendScreen({
 
           {/* 카드 프리뷰 */}
           <View className="mt-5">
-            <PreviewCard scene={mainScene} />
+            <PreviewCard scene={previewScene} />
           </View>
 
           {/* 장면 추천 */}
@@ -92,9 +101,20 @@ export default function SceneRecommendScreen({
 
         {/* 버튼 */}
         <View className="gap-4">
-          <Button onPress={onNext}>다음</Button>
+          <Button
+            disabled={isLoading && loadingAction !== "next"}
+            isLoading={loadingAction === "next"}
+            onPress={onNext}
+          >
+            다음
+          </Button>
           {selectedId === 1 && (
-            <Button isWhite={true} onPress={onRefresh}>
+            <Button
+              isWhite={true}
+              disabled={isLoading && loadingAction !== "refresh"}
+              isLoading={loadingAction === "refresh"}
+              onPress={onRefresh}
+            >
               다른 장면 추천 받기
             </Button>
           )}

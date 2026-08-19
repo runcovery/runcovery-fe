@@ -1,6 +1,6 @@
 import Button from "@/components/ui/Button";
-import { CardData } from "@/types/onboarding/cardData";
 import { useProfileStore } from "@/stores/useProfileStore";
+import { CardData } from "@/types/onboarding/cardData";
 import { Text, View } from "react-native";
 import SelectCard from "../select-card";
 
@@ -8,7 +8,7 @@ const getDetailData = (nickname: string): CardData[] => [
   {
     id: 1,
     title: "AI가 추천해줘요.",
-    content: `내 상황에 맞는 목표를 \n${nickname}님에 맞게 찾아드려요.`,
+    content: `내 상황에 맞는 목표를 \n${nickname}님에게 맞게 찾아드려요.`,
   },
   {
     id: 2,
@@ -18,12 +18,14 @@ const getDetailData = (nickname: string): CardData[] => [
 ];
 
 interface ChooseStepScreenProps {
+  isLoading: boolean;
   selectedId: number;
   onSelect: (id: number) => void;
   onNext: () => void;
 }
 
 export default function ChooseStepScreen({
+  isLoading,
   selectedId,
   onSelect,
   onNext,
@@ -59,7 +61,11 @@ export default function ChooseStepScreen({
 
       {/* 버튼 */}
       <View>
-        <Button disabled={selectedId === 0} onPress={onNext}>
+        <Button
+          disabled={selectedId === 0}
+          isLoading={isLoading}
+          onPress={onNext}
+        >
           다음
         </Button>
       </View>

@@ -6,7 +6,7 @@ import { useOnboardingRegistration } from "@/hooks/onboarding/useOnboardingRegis
 import { useProfileStore } from "@/stores/useProfileStore";
 import { CardData } from "@/types/onboarding/cardData";
 import { router } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 const RUNNING_DATA: CardData[] = [
   {
@@ -32,7 +32,7 @@ const RUNNING_DATA: CardData[] = [
 ];
 
 export default function RunningExperienceScreen() {
-  const { isSubmitting, profile, registerUser } =
+  const { errorMessage, isSubmitting, profile, registerUser } =
     useOnboardingRegistration();
   const setProfileField = useProfileStore((state) => state.setProfileField);
   const { nickname, runningExperience } = profile;
@@ -81,8 +81,12 @@ export default function RunningExperienceScreen() {
 
             {/* 버튼 */}
             <View className="w-full mt-7">
+              {errorMessage ? (
+                <Text className="mb-3 text-center text-error">{errorMessage}</Text>
+              ) : null}
               <Button
-                disabled={!runningExperience || isSubmitting}
+                disabled={!runningExperience}
+                isLoading={isSubmitting}
                 onPress={handleNext}
               >
                 다음

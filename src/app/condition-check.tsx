@@ -4,9 +4,14 @@ import StepScreenLayout from "@/components/shared/step-screen-layout";
 import Button from "@/components/ui/Button";
 import OptionCard from "@/components/ui/option-card";
 import { useProfileStore } from "@/stores/useProfileStore";
-import { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { useRef, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 import LoadingScreen from "../components/shared/loading";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { analyzeCondition } from "@/apis/condition";
+import { getApiErrorMessage } from "@/apis";
+import type { BodyCondition, SleepQuality } from "@/types/condition";
+import { router } from "expo-router";
 
 type StepType = "body" | "sleep" | "pain" | "loading";
 
@@ -34,20 +39,73 @@ const getCheckData = (nickname: string) => ({
 export default function ConditionCheckScreen() {
   const [step, setStep] = useState<StepType>("body");
   const [selectedBodyParts, setSelectedBodyParts] = useState<BodyPartId[]>([]);
+  const [bodyCondition, setBodyCondition] = useState<BodyCondition | null>(null);
+  const [sleepQuality, setSleepQuality] = useState<SleepQuality | null>(null);
   const nickname = useProfileStore((state) => state.profile.nickname);
+  const queryClient = useQueryClient();
+  const submitLockRef = useRef(false);
+  const shouldHandleMutationResultRef = useRef(true);
   const checkData = getCheckData(nickname);
+
+  const conditionMutation = useMutation({
+    mutationFn: analyzeCondition,
+    onSuccess: (condition) => {
+      queryClient.setQueryData(["condition", "latest"], condition);
+      void queryClient.invalidateQueries({ queryKey: ["mission"] });
+      void queryClient.invalidateQueries({ queryKey: ["user", "mypage"] });
+      if (!shouldHandleMutationResultRef.current) return;
+      router.replace("/(tabs)/condition");
+    },
+    onSettled: () => {
+      submitLockRef.current = false;
+    },
+  });
 
   const isCheck = step !== "pain" && step !== "loading";
 
   const handleBodyCheckNext = (parts: BodyPartId[]) => {
+    if (!bodyCondition || !sleepQuality || submitLockRef.current) return;
+
+    submitLockRef.current = true;
+    shouldHandleMutationResultRef.current = true;
     setSelectedBodyParts(parts);
     setStep("loading");
+    conditionMutation.mutate({
+      bodyCondition,
+      sleepQuality,
+      painAreas: parts,
+    });
+  };
+
+  const selectedValue = step === "body" ? bodyCondition : sleepQuality;
+  const selectValue = (id: number) => {
+    if (step === "body") {
+      setBodyCondition(({ 1: "EXHAUSTED", 2: "FAIR", 3: "GOOD" } as const)[id as 1 | 2 | 3]);
+    } else {
+      setSleepQuality(({ 1: "GOOD", 2: "FAIR", 3: "POOR" } as const)[id as 1 | 2 | 3]);
+    }
+  };
+
+  const handleBack = () => {
+    if (step === "body") {
+      router.back();
+      return;
+    }
+
+    if (step === "loading") {
+      shouldHandleMutationResultRef.current = false;
+      setStep("pain");
+      return;
+    }
+
+    setStep(step === "pain" ? "sleep" : "body");
   };
 
   return (
     <View className="flex-1">
       <StepScreenLayout
         title="내 컨디션"
+        onBack={handleBack}
         edges={["left", "right", "bottom"]}
       >
         {isCheck && (
@@ -71,6 +129,10 @@ export default function ConditionCheckScreen() {
                     key={item.id}
                     py="py-6"
                     content={item.content}
+                    selected={selectedValue === (step === "body"
+                      ? ({ 1: "EXHAUSTED", 2: "FAIR", 3: "GOOD" } as const)[item.id]
+                      : ({ 1: "GOOD", 2: "FAIR", 3: "POOR" } as const)[item.id])}
+                    onPress={() => selectValue(item.id)}
                   />
                 ))}
               </View>
@@ -78,6 +140,7 @@ export default function ConditionCheckScreen() {
 
             <View>
               <Button
+                disabled={!selectedValue}
                 onPress={() => {
                   if (step === "body") setStep("sleep");
                   else setStep("pain");
@@ -100,6 +163,8 @@ export default function ConditionCheckScreen() {
             title="컨디션을 분석하고 있어요."
             subTitle="잠시만 기다려주시면 맞춤 리포트가 완성돼요."
             text="건강 데이터를 수집하는 중.."
+            error={conditionMutation.isError ? getApiErrorMessage(conditionMutation.error, "컨디션을 저장하지 못했습니다.") : null}
+            onRetry={() => handleBodyCheckNext(selectedBodyParts)}
           />
         )}
       </StepScreenLayout>

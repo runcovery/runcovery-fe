@@ -9,6 +9,7 @@ import type {
   RecommendedScene,
   SceneRecommendationResponse,
 } from "@/types/goal";
+import type { WeeklyGoalResponse } from "@/types/mission";
 
 // 프로필 기반 장면 추천
 export const recommendScenesByProfile = async () => {
@@ -59,4 +60,18 @@ export const getGoal = async () => {
   const res = await api.get<ApiResponse<FutureGoalResponse>>("/goals/future");
 
   return res;
+};
+
+export const getCurrentWeeklyGoal = async () => {
+  const { data } = await api.get<ApiResponse<WeeklyGoalResponse>>(
+    "/goals/weekly/current",
+  );
+  return data.data;
+};
+
+export const generateWeeklyGoal = async () => {
+  const { data } = await api.post<ApiResponse<WeeklyGoalResponse>>(
+    "/goals/weekly/generate",
+  );
+  return data.data;
 };

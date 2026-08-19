@@ -4,7 +4,18 @@ import OutlineCard from "../shared/outline-card";
 import Label from "../ui/label";
 import AchievementProgress from "./achievement-progress";
 
-// const RenderImg = []
+const getOverviewImage = (progress: number) => {
+  if (progress >= 100) {
+    return require("../../../assets/images/home/overview-100.png");
+  }
+  if (progress >= 80) {
+    return require("../../../assets/images/home/overview-over-50.png");
+  }
+  if (progress >= 50) {
+    return require("../../../assets/images/home/overview-over-50-under-80.png");
+  }
+  return require("../../../assets/images/home/overview-under-50.png");
+};
 
 interface ConditionOverviewCardProps {
   achievementRate: number;
@@ -19,11 +30,8 @@ export default function ConditionOverviewCard({
   scene,
   temp,
 }: ConditionOverviewCardProps) {
-  const progress = achievementRate;
-  const renderImg =
-    progress > 50
-      ? require("../../../assets/images/home/overview-main.png")
-      : require("../../../assets/images/home/overview-under-50.png");
+  const progress = Math.min(100, Math.max(0, achievementRate));
+  const overviewImage = getOverviewImage(progress);
 
   return (
     <OutlineCard>
@@ -37,11 +45,7 @@ export default function ConditionOverviewCard({
             체력이 좋아져 하루가 가벼운 모습
           </Text>
           <Image
-            source={
-              progress === 100
-                ? require("../../../assets/images/home/overview-100.png")
-                : renderImg
-            }
+            source={overviewImage}
             className="w-full max-w-50 h-40 mt-4"
             resizeMode="contain"
           />

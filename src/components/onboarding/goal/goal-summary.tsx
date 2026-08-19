@@ -22,12 +22,12 @@ const MetricCard = ({ label, value }: MetricInterface) => {
 };
 
 export default function GoalSummaryScreen({
-  disabled,
+  isLoading,
   goal,
   onSubmit,
   scene,
 }: {
-  disabled: boolean;
+  isLoading: boolean;
   goal: GoalPlanPayload;
   onSubmit: () => void;
   scene: RecommendedScene | null;
@@ -77,7 +77,7 @@ export default function GoalSummaryScreen({
       </View>
 
       {/* 버튼 */}
-      <Button disabled={disabled} onPress={onSubmit}>시작하기</Button>
+      <Button isLoading={isLoading} onPress={onSubmit}>시작하기</Button>
     </View>
   );
 }

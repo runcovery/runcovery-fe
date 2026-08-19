@@ -12,6 +12,7 @@ import type {
   GoalPlanPayload,
   RecommendedScene,
 } from "@/types/goal";
+import { getApiErrorMessage } from "@/apis";
 
 export type GoalDetailStep =
   | "Scene"
@@ -19,6 +20,14 @@ export type GoalDetailStep =
   | "Form"
   | "Summary"
   | "Choose";
+
+export type GoalSubmittingAction =
+  | "choose"
+  | "form"
+  | "sceneNext"
+  | "refresh"
+  | "submit"
+  | null;
 
 const initialGoal: GoalPayload = {
   scene: "",
@@ -35,6 +44,9 @@ export const useGoalDetailFlow = () => {
   const [selectedScene, setSelectedScene] =
     useState<RecommendedScene | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittingAction, setSubmittingAction] =
+    useState<GoalSubmittingAction>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [step, setStep] = useState<GoalDetailStep>("Choose");
 
   const updateGoalPlan = (goalPlan: GoalPlanPayload) => {
@@ -87,20 +99,30 @@ export const useGoalDetailFlow = () => {
     if (selectedId !== 1) return;
 
     try {
+      setSubmittingAction("choose");
       setIsSubmitting(true);
+      setErrorMessage(null);
       await requestScenesByProfile();
       setStep("Scene");
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "추천 장면을 불러오지 못했습니다."));
     } finally {
+      setSubmittingAction(null);
       setIsSubmitting(false);
     }
   };
 
   const handleFormNext = async () => {
     try {
+      setSubmittingAction("form");
       setIsSubmitting(true);
+      setErrorMessage(null);
       await requestScenesByPlan();
       setStep("Scene");
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "추천 장면을 불러오지 못했습니다."));
     } finally {
+      setSubmittingAction(null);
       setIsSubmitting(false);
     }
   };
@@ -130,7 +152,9 @@ export const useGoalDetailFlow = () => {
     if (!selectedScene) return;
 
     try {
+      setSubmittingAction("sceneNext");
       setIsSubmitting(true);
+      setErrorMessage(null);
       const response = await recommendPlan({ payload: selectedScene });
       const plan = response.data.data;
 
@@ -143,20 +167,28 @@ export const useGoalDetailFlow = () => {
         availableTime: plan.availableTime,
       }));
       setStep("Adjust");
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "추천 목표를 불러오지 못했습니다."));
     } finally {
+      setSubmittingAction(null);
       setIsSubmitting(false);
     }
   };
 
   const handleRefreshScenes = async () => {
     try {
+      setSubmittingAction("refresh");
       setIsSubmitting(true);
+      setErrorMessage(null);
       if (selectedId === 1) {
         await requestScenesByProfile();
       } else {
         await requestScenesByPlan();
       }
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "추천 장면을 새로 불러오지 못했습니다."));
     } finally {
+      setSubmittingAction(null);
       setIsSubmitting(false);
     }
   };
@@ -165,16 +197,39 @@ export const useGoalDetailFlow = () => {
     if (!ENABLE_ONBOARDING_API) return true;
 
     try {
+      setSubmittingAction("submit");
       setIsSubmitting(true);
+      setErrorMessage(null);
       await saveFutureGoal({ payload: goal });
       return true;
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "미래 목표를 저장하지 못했습니다."));
+      return false;
     } finally {
+      setSubmittingAction(null);
       setIsSubmitting(false);
     }
   };
 
+  const goBack = () => {
+    if (isSubmitting) return true;
+
+    if (step === "Choose") return false;
+
+    setErrorMessage(null);
+    if (step === "Form") setStep("Choose");
+    if (step === "Scene") setStep(selectedId === 2 ? "Form" : "Choose");
+    if (step === "Adjust") setStep("Scene");
+    if (step === "Summary")
+      setStep(selectedId === 2 ? "Scene" : "Adjust");
+
+    return true;
+  };
+
   return {
     goal,
+    errorMessage,
+    goBack,
     goToSummary: () => setStep("Summary"),
     handleChooseNext,
     handleFormNext,
@@ -187,6 +242,7 @@ export const useGoalDetailFlow = () => {
     selectedId,
     setSelectedId,
     step,
+    submittingAction,
     submitGoal,
     updateGoalPlan,
   };
