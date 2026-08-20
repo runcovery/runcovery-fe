@@ -16,10 +16,12 @@ export default function ProfileSection({
 
   return (
     <View className="mt-5 flex-row items-center gap-3">
+      {/* 프로필 아바타 */}
       <View className="h-9 w-9 items-center justify-center rounded-full bg-primary-160">
         <Text className="text-[21px]">🤪</Text>
       </View>
 
+      {/* 닉네임과 월간 칼로리 달성률 */}
       <View className="flex-1 gap-2">
         <Text className="text-[14px] font-semibold text-neutral-500">
           {nickname}

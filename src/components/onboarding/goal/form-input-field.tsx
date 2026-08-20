@@ -34,11 +34,13 @@ export default function FormInputField({
 
   return (
     <View className="gap-5">
+      {/* 입력 라벨 */}
       {label && (
         <Text className="will-change-variable text-[14px] font-semibold text-[#373737]">
           {label}
         </Text>
       )}
+      {/* 접두사·입력값·단위가 한 줄로 이어지는 목표 입력창 */}
       <Pressable
         onPress={() => inputRef.current?.focus()}
         className={`shadow-[0_2px_4px_rgba(0,0,0,0.08)] flex-row items-center rounded-2xl border px-6 py-5 ${

@@ -12,11 +12,8 @@ import { getConditions } from "@/apis/condition";
 import { getApiErrorMessage } from "@/apis";
 import { router } from "expo-router";
 import { useRef } from "react";
-
-const DEFAULT_LOCATION = {
-  lat: 37.5665,
-  lon: 126.978,
-};
+import { DEFAULT_LOCATION } from "@/constants/location";
+import { queryKeys } from "@/lib/query-keys";
 
 export default function MissionScreen() {
   const nickname = useProfileStore((state) => state.profile.nickname);
@@ -24,23 +21,24 @@ export default function MissionScreen() {
   const queryClient = useQueryClient();
   const generationLockRef = useRef(false);
   const conditionQuery = useQuery({
-    queryKey: ["condition", "latest"],
+    queryKey: queryKeys.condition.latest,
     queryFn: getConditions,
     enabled: isReady,
     retry: false,
   });
   const missionQuery = useQuery({
-    queryKey: ["mission", "today"],
+    queryKey: queryKeys.mission.today,
     queryFn: getMissions,
     enabled: isReady,
   });
   const weeklyQuery = useQuery({
-    queryKey: ["goal", "weekly", "current"],
+    queryKey: queryKeys.goal.weeklyCurrent,
     queryFn: getCurrentWeeklyGoal,
     enabled: isReady,
   });
   const generateMutation = useMutation({
     mutationFn: async () => {
+      // 이미 존재하는 데이터는 재생성하지 않고 없는 미션과 주간 목표만 병렬 생성한다.
       const [mission, weeklyGoal] = await Promise.all([
         missionQuery.data
           ? Promise.resolve(missionQuery.data)
@@ -52,10 +50,12 @@ export default function MissionScreen() {
       return { mission, weeklyGoal };
     },
     onSuccess: ({ mission, weeklyGoal }) => {
-      queryClient.setQueryData(["mission", "today"], mission);
-      queryClient.setQueryData(["goal", "weekly", "current"], weeklyGoal);
+      queryClient.setQueryData(queryKeys.mission.today, mission);
+      queryClient.setQueryData(queryKeys.goal.weeklyCurrent, weeklyGoal);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.home.all });
     },
     onError: async () => {
+      // 생성 요청이 응답만 실패했을 수 있으므로 서버에 실제 생성됐는지 다시 확인한다.
       await Promise.all([missionQuery.refetch(), weeklyQuery.refetch()]);
     },
     onSettled: () => {
@@ -73,6 +73,7 @@ export default function MissionScreen() {
     .includes("query did not return a unique result");
 
   const handlePrimaryAction = () => {
+    // 컨디션이 선행되어야 서버가 오늘 상태에 맞는 미션을 만들 수 있다.
     if (!hasCondition) {
       router.push("/condition-check");
       return;
@@ -113,6 +114,7 @@ export default function MissionScreen() {
           }}
           showsVerticalScrollIndicator={false}
         >
+          {/* 타이틀 */}
           <Text className="text-[16px] font-semibold text-black w-full text-center">
             미션
           </Text>
@@ -126,6 +128,7 @@ export default function MissionScreen() {
               </Text>
             </View>
           </View>
+          {/* 주간 목표와 오늘의 미션 */}
           <View className="mt-4 gap-5 w-full">
             <WeeklyGoalCard goal={weeklyQuery.data} />
             <DailyGoalCard mission={missionQuery.data} />
@@ -137,6 +140,7 @@ export default function MissionScreen() {
                 : generateErrorMessage}
             </Text>
           )}
+          {/* 컨디션 확인 또는 미션 생성 버튼 */}
           <View className="mt-9 w-full">
             <Button
               disabled={hasCondition && hasMission}

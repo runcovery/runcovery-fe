@@ -1,9 +1,5 @@
 import type { ActivitySyncPayload } from "@/types/activity";
-
-const DEFAULT_LOCATION = {
-  lat: 37.5665,
-  lon: 126.978,
-};
+import { DEFAULT_LOCATION } from "@/constants/location";
 
 const toLocalDate = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -11,8 +7,10 @@ const toLocalDate = (date: Date) =>
 export const createDemoActivitySyncPayload = (
   now = new Date(),
 ): ActivitySyncPayload => {
+  // 백엔드의 '오늘 활동' 조회와 날짜가 어긋나지 않도록 기기 로컬 날짜를 사용한다.
   const recordDate = toLocalDate(now);
 
+  // 실제 헬스 플랫폼 연동 전까지 화면 전체 흐름을 검증하기 위한 고정 시연 기록이다.
   return {
     recordDate,
     runningDuration: 1200,

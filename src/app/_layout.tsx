@@ -10,6 +10,7 @@ import { queryClient } from "@/lib/query-client";
 
 import "../global.css";
 
+// 사용자 식별자를 준비하는 동안 네이티브 스플래시가 먼저 사라지지 않게 한다.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -17,6 +18,7 @@ export default function RootLayout() {
   const initializeUserId = useProfileStore((state) => state.initializeUserId);
 
   useEffect(() => {
+    // 보호 API의 X-Public-Id가 항상 준비된 뒤 앱 화면을 노출한다.
     initializeUserId();
     void SplashScreen.hideAsync();
   }, [initializeUserId]);

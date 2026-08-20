@@ -105,7 +105,9 @@ export default function GoalDetailScreen() {
     >
       <StepScreenLayout onBack={handleBack}>
         <View className="flex-1 w-full">
+          {/* API 오류 메시지 */}
           {errorMessage ? <Text className="mb-3 text-center text-error">{errorMessage}</Text> : null}
+          {/* 현재 목표 설정 단계 */}
           {stepComponents[step]}
         </View>
       </StepScreenLayout>

@@ -9,12 +9,15 @@ import { useProfileStore } from "@/stores/useProfileStore";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { Image, ScrollView, Text, View } from "react-native";
+import { queryKeys } from "@/lib/query-keys";
 
 const ConditionBox = ({ feedback }: { feedback: string[] }) => {
   return (
     <View className="bg-white rounded-[22px] border w-full mt-3 border-primary-440 shadow-[0_2px_4px_rgba(0,0,0,0.08)] py-5 px-7">
+      {/* 컨디션 라벨 */}
       <Label text="오늘의 컨디션" bg="bg-[#298DFF]" />
 
+      {/* 컨디션 피드백 리스트 */}
       <View className="gap-4 mt-5">
         {feedback.map((item) => (
           <CheckItem key={item} text={item} />
@@ -44,7 +47,7 @@ const CheckItem = ({ text }: { text: string }) => {
 export default function ConditionScreen() {
   const isReady = useProfileStore((state) => state.isUserIdInitialized);
   const conditionQuery = useQuery({
-    queryKey: ["condition", "latest"],
+    queryKey: queryKeys.condition.latest,
     queryFn: getConditions,
     enabled: isReady,
   });
@@ -76,6 +79,7 @@ export default function ConditionScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="w-full">
+            {/* 타이틀 */}
             <Text className="text-[16px] font-semibold text-black w-full text-center">
               내 컨디션
             </Text>
@@ -92,6 +96,7 @@ export default function ConditionScreen() {
                   }
                 />
               </View>
+              {/* 컨디션 결과 */}
               {conditionQuery.isError ? (
                 <Text className="mt-6 text-center text-error">
                   {getApiErrorMessage(
@@ -106,6 +111,7 @@ export default function ConditionScreen() {
               ) : null}
             </View>
           </View>
+          {/* 버튼 */}
           <Button
             onPress={() =>
               hasCondition

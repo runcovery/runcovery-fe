@@ -38,6 +38,7 @@ export default function BodyFigure({
   return (
     <View className="flex-1 items-center">
       <Svg width={width} height={height} viewBox="0 0 150 350">
+        {/* 머리는 앞·뒤 실루엣이 달라 별도로 렌더링한다. */}
         {side === "front" ? (
           <G>
             <Ellipse
@@ -72,6 +73,7 @@ export default function BodyFigure({
           </G>
         )}
 
+        {/* 선택 영역과 시각 영역을 분리해 작은 신체 부위도 누르기 쉽게 만든다. */}
         {parts.map((part) => (
           <G key={part.id}>
             <Path
@@ -95,6 +97,7 @@ export default function BodyFigure({
           </G>
         ))}
       </Svg>
+      {/* 신체 방향 라벨 */}
       <Text className="mt-10 text-[14px] font-medium text-neutral-950">
         {side === "front" ? "앞" : "뒤"}
       </Text>

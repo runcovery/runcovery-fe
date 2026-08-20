@@ -35,8 +35,10 @@ export default function ConditionOverviewCard({
 
   return (
     <OutlineCard>
+      {/* 미래 목표 라벨 */}
       <Label text="미래의 나" bg="bg-primary-500" />
       <View className="flex-row justify-between gap-3 mt-4">
+        {/* 목표 장면과 달성률별 캐릭터 */}
         <View className="flex-1 min-w-0 gap-2">
           <Text className="text-[18px] font-semibold text-black whitespace-pre-wrap">
             {scene}
@@ -50,6 +52,7 @@ export default function ConditionOverviewCard({
             resizeMode="contain"
           />
         </View>
+        {/* 목표 달성률과 남은 기간 */}
         <View className="shrink-0 items-end">
           <AchievementProgress progress={progress} />
           <Text className="text-[16px] font-bold text-neutral-300 mt-5">

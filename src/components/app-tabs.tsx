@@ -1,5 +1,3 @@
-import { useColorScheme } from "react-native";
-
 import ConditionIcon from "@/assets/images/tabIcons/condition.svg";
 import HomeIcon from "@/assets/images/tabIcons/home.svg";
 import ManageIcon from "@/assets/images/tabIcons/manage.svg";
@@ -11,9 +9,8 @@ const DEFAULT_ICON_COLOR = "#9FA3A8";
 const SELECTED_ICON_COLOR = "#725AF5";
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-
   return (
+    // 모바일에서는 Expo Router의 네이티브 탭 바를 사용한다.
     <Tabs
       screenOptions={{
         headerShown: false,

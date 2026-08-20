@@ -22,6 +22,7 @@ export default function PrescriptionCard({
       accessibilityLabel={prescription.onPress ? `${prescription.category} 처방전 자세히 보기` : undefined}
       className="rounded-[22px] border border-primary-440 bg-white px-5 py-4 shadow-[0_2px_4px_rgba(0,0,0,0.08)] active:opacity-80"
     >
+      {/* 처방 카테고리 */}
       <View
         className={[
           "self-start rounded-lg px-4 py-1",
@@ -33,6 +34,7 @@ export default function PrescriptionCard({
         </Text>
       </View>
 
+      {/* 처방 요약 */}
       <Text className="mt-5 text-[16px] font-semibold leading-7 text-neutral-950">
         {prescription.title}
       </Text>
@@ -40,6 +42,7 @@ export default function PrescriptionCard({
         {prescription.description}
       </Text>
 
+      {/* 상세 화면 이동 안내 */}
       {prescription.actionLabel ? (
         <View className="mt-3 self-end">
           <Text className="text-[12px] font-medium text-primary-500">

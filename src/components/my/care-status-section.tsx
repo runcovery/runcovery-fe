@@ -10,10 +10,12 @@ export default function CareStatusSection({ conditionRate, skinRate, stretchRate
   ];
   return (
     <View>
+      {/* 섹션 타이틀 */}
       <Text className="text-[16px] font-semibold text-neutral-400">
         이번 주 사후 관리 현황
       </Text>
 
+      {/* 관리 항목별 달성률 */}
       <View className="mt-4 flex-row gap-3">
         {careStatus.map(({ label, progress }) => (
           <View
@@ -32,6 +34,7 @@ export default function CareStatusSection({ conditionRate, skinRate, stretchRate
         ))}
       </View>
 
+      {/* 주간 관리 피드백 */}
       <View className="mt-5 flex-row items-center rounded-2xl border border-primary-500 bg-white px-5 py-4 shadow-[0_2px_4px_rgba(0,0,0,0.08)]">
         <Text className="mr-2 text-[14px]">✨</Text>
         <Text className="flex-1 text-[14px] font-semibold leading-6 text-neutral-500">

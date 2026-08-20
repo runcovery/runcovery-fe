@@ -27,6 +27,7 @@ export default function AchievementProgress({
       accessibilityLabel="목표 달성률"
       accessibilityValue={{ min: 0, max: 100, now: normalizedProgress }}
     >
+      {/* 원형 달성률 그래프 */}
       <Svg width={SIZE} height={SIZE}>
         <Circle
           cx={CENTER}
@@ -50,6 +51,7 @@ export default function AchievementProgress({
         />
       </Svg>
 
+      {/* 달성률 수치 */}
       <View className="absolute inset-0 items-center justify-center">
         <Text className="text-[20px] font-semibold text-primary-500">
           {Math.round(normalizedProgress)}%

@@ -20,6 +20,7 @@ export default function GradientBackground({
 }: GradientBackgroundProps) {
   return (
     <View className="absolute inset-0 bg-white" pointerEvents="none">
+      {/* 화면 비율과 관계없이 늘어나는 곡선형 그라데이션 */}
       <StyledSvg
         className="absolute inset-0 h-full w-full"
         preserveAspectRatio="none"
@@ -48,6 +49,7 @@ export default function GradientBackground({
         />
       </StyledSvg>
 
+      {/* SVG 경계를 부드럽게 섞어 배경의 색상 전환을 완화한다. */}
       <BlurView
         experimentalBlurMethod="dimezisBlurView"
         blurReductionFactor={1}

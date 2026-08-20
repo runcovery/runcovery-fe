@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPrescriptions } from "@/apis/wellness";
 import { router } from "expo-router";
 import { getApiErrorMessage } from "@/apis";
+import { queryKeys } from "@/lib/query-keys";
 
 const WELLNESS_CENTERS: WellnessCenter[] = [
   {
@@ -28,7 +29,7 @@ const WELLNESS_CENTERS: WellnessCenter[] = [
 
 export default function WellnessReport({ report }: { report: ReportResponse }) {
   const prescriptionsQuery = useQuery({
-    queryKey: ["wellness", "prescriptions", "latest"],
+    queryKey: queryKeys.wellness.prescriptionList(),
     queryFn: () => getPrescriptions(),
   });
   const fallbackPrescriptions: Prescription[] = [
@@ -64,10 +65,12 @@ export default function WellnessReport({ report }: { report: ReportResponse }) {
       contentContainerStyle={{ paddingBottom: 24 }}
       showsVerticalScrollIndicator={false}
     >
+      {/* 타이틀 */}
       <Text className="mt-3 text-[20px] font-semibold text-neutral-950">
         맞춤형 웰니스 처방전
       </Text>
 
+      {/* 맞춤 처방 리스트 */}
       <View className="mt-4 gap-4">
         {prescriptions.map((prescription) => (
           <PrescriptionCard key={prescription.id} prescription={prescription} />
@@ -79,6 +82,7 @@ export default function WellnessReport({ report }: { report: ReportResponse }) {
         </Text>
       ) : null}
 
+      {/* 오프라인 웰니스 센터 */}
       <Text className="mt-7 text-[18px] font-semibold text-neutral-950">
         더 완벽하고 빠른 회복을 원한다면?
       </Text>

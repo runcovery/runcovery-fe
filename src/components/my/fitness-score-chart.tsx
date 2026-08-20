@@ -27,6 +27,7 @@ export default function FitnessScoreChart({ scores }: { scores: SkinScore[] }) {
   const normalizedScores = useMemo(() => {
     const scoreByDay = new Map<number, SkinScore>();
 
+    // 같은 날짜의 중복 응답은 마지막 값으로 합치고 차트 범위를 0~100점으로 제한한다.
     scores.forEach(({ day, score }) => {
       if (Number.isFinite(day) && Number.isFinite(score)) {
         scoreByDay.set(day, { day, score: clampScore(score) });
@@ -51,6 +52,7 @@ export default function FitnessScoreChart({ scores }: { scores: SkinScore[] }) {
     );
   }
 
+  // 실제 점수 주변에 5점 여백을 두되 지나치게 좁은 Y축이 되지 않도록 기본 범위를 보장한다.
   const observedMin = Math.min(...normalizedScores.map(({ score }) => score));
   const observedMax = Math.max(...normalizedScores.map(({ score }) => score));
   const axisMin = Math.max(0, Math.min(50, Math.floor((observedMin - 5) / 5) * 5));
@@ -72,6 +74,7 @@ export default function FitnessScoreChart({ scores }: { scores: SkinScore[] }) {
     x: getX(index),
     y: getY(score),
   }));
+  // 인접 점을 제어점으로 삼은 Catmull-Rom 형태의 베지어 곡선을 만든다.
   const linePath = points.reduce((path, point, index) => {
     if (index === 0) return `M ${point.x} ${point.y}`;
 
@@ -87,6 +90,7 @@ export default function FitnessScoreChart({ scores }: { scores: SkinScore[] }) {
 
     return `${path} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${point.x} ${point.y}`;
   }, "");
+  // 데이터가 많아도 X축 라벨은 최대 7개 안팎만 보여 겹침을 방지한다.
   const labelInterval = Math.max(1, Math.ceil(normalizedScores.length / 7));
   const first = normalizedScores[0];
   const last = normalizedScores[normalizedScores.length - 1];

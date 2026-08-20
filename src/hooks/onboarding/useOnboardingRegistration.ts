@@ -12,6 +12,7 @@ export const useOnboardingRegistration = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const registerUser = async () => {
+    // API 플래그가 꺼진 시연 환경에서도 다음 온보딩 단계로 진행할 수 있다.
     if (!ENABLE_ONBOARDING_API) return true;
     if (!userId || !profile.gender) return false;
 

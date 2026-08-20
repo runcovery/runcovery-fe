@@ -33,6 +33,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
   initializeUserId: () => {
     const existingUserId = get().userId;
 
+    // 루트 레이아웃이 다시 렌더링되어도 같은 앱 실행 중에는 식별자를 유지한다.
     if (get().isUserIdInitialized && existingUserId) {
       return existingUserId;
     }
@@ -50,5 +51,6 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         [field]: value,
       },
     })),
+  // 사용자 식별자는 API 인증에 계속 필요하므로 입력한 프로필 값만 초기화한다.
   resetProfile: () => set({ profile: initialProfile }),
 }));

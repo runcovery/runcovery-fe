@@ -20,6 +20,7 @@ export default function LandingScreen() {
     <View className="flex-1">
       <StatusBar style="dark" hidden={false} />
       <GradientScreenLayout>
+        {/* 앱 로고 */}
         <View className="-translate-y-10 flex-1 items-center justify-center px-6">
           <View className="items-center gap-7">
             <Image
