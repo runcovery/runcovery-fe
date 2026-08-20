@@ -20,17 +20,20 @@ const GoalItem = ({ children }: { children: string }) => {
 export default function WeeklyGoalCard({ goal }: { goal?: WeeklyGoalResponse }) {
   return (
     <View>
+      {/* 카드 타이틀 */}
       <Text className="text-[14px] font-semibold text-black ml-4">
         주간 목표
       </Text>
       <View className="mt-3">
         <OutlineCard py="py-5">
+          {/* 주간 거리와 칼로리 목표 */}
           <View>
             <Label text="주간 목표" bg="bg-[#298DFF]" />
             <Text className="text-[14px] font-semibold text-black ml-2 mt-2">
               {goal ? `${goal.expectedCalories.toLocaleString()} 칼로리 · ${goal.weeklyGoalDistance}km\n${goal.weeklyGoal}` : "아직 생성된 주간 목표가 없어요."}
             </Text>
           </View>
+          {/* 주간 훈련 스케줄 */}
           <View className="mt-3">
             <Label text="스케줄 구성" bg="bg-primary-310" />
             <View className="gap-6 mt-4">

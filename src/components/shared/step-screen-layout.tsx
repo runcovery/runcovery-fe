@@ -27,6 +27,7 @@ export default function StepScreenLayout({
     useCallback(() => {
       if (!onBack) return undefined;
 
+      // 화면의 단계별 뒤로가기 규칙을 Android 하드웨어 버튼에도 동일하게 적용한다.
       const subscription = BackHandler.addEventListener(
         "hardwareBackPress",
         () => {
@@ -42,7 +43,9 @@ export default function StepScreenLayout({
   return (
     <GradientScreenLayout offsetY={offsetY} edges={edges}>
       <ScreenContainer style={contentContainerStyle}>
+        {/* 공통 헤더 */}
         <ScreenHeader title={title} onBack={onBack} />
+        {/* 단계별 화면 콘텐츠 */}
         {children}
       </ScreenContainer>
     </GradientScreenLayout>

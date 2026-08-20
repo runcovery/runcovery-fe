@@ -41,10 +41,12 @@ export default function WeeklyMissionSection({
 
   return (
     <View>
+      {/* 섹션 타이틀 */}
       <Text className="text-[16px] font-semibold text-neutral-400">
         이번 주 미션 현황
       </Text>
 
+      {/* 이번 주 날짜별 미션 달성 여부 */}
       <View className="mt-4 rounded-[22px] bg-primary-390 px-5 pb-5 pt-4 shadow-[0_4px_8px_rgba(75,57,180,0.18)]">
         <Text className="text-[14px] font-semibold text-white">
           {successMessage}

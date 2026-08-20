@@ -34,10 +34,12 @@ export default function BodyCheckStep({
       showsVerticalScrollIndicator={false}
     >
       <View>
+        {/* 타이틀 */}
         <Text className="text-[20px] font-semibold text-neutral-950 mt-3">
           러닝 중 불편하거나 아픈 부위가 있었나요?
         </Text>
 
+        {/* 앞면·뒷면 통증 부위 선택 */}
         <View className="w-full flex-row items-start justify-between mt-8">
           <BodyFigure
             side="front"
@@ -54,6 +56,7 @@ export default function BodyCheckStep({
         </View>
       </View>
 
+      {/* 버튼 */}
       <View className="gap-4 w-full">
         <Button onPress={() => onNext(selectedParts)}>다음</Button>
         <Button isWhite onPress={handleNoPain}>

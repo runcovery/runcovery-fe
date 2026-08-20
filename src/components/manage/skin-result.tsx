@@ -43,6 +43,7 @@ export default function SkinResultScreen({ result }: SkinResultProps) {
         contentContainerStyle={{ paddingTop: 12, paddingBottom: 28 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* 타이틀 */}
         <Text className="text-[20px] font-semibold text-neutral-950">
           {isComparison ? "관리 후 비교한 피부 상태" : "관리 후 피부 상태"}
         </Text>
@@ -52,6 +53,7 @@ export default function SkinResultScreen({ result }: SkinResultProps) {
             : "오늘 측정한 관리 후 피부 상태예요."}
         </Text>
 
+        {/* 항목별 피부 점수와 이전 기록 대비 변화량 */}
         <View className="mt-6 gap-5">
           {SKIN_METRICS.map(({ key, label }) => {
             const score = Number(scores[key]);

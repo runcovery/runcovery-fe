@@ -1,60 +1,41 @@
-import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { getApiErrorMessage } from "@/apis";
 import { getHome } from "@/apis/home";
 import { syncActivity } from "@/apis/activity";
+import { DEFAULT_LOCATION } from "@/constants/location";
 import { createDemoActivitySyncPayload } from "@/lib/activity-sync";
+import { queryKeys } from "@/lib/query-keys";
 import { useProfileStore } from "@/stores/useProfileStore";
-import type { HomeResponse } from "@/types/home";
-
-// Location access is disabled. Keep location-based API contracts working with
-// a fixed fallback until the permission feature is restored.
-const DEFAULT_LOCATION = {
-  lat: 37.5665,
-  lon: 126.978,
-};
 
 export const useHomeData = () => {
   const isReady = useProfileStore((state) => state.isUserIdInitialized);
   const queryClient = useQueryClient();
-  const [data, setData] = useState<HomeResponse | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const loadHome = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setErrorMessage(null);
-
+  const homeQuery = useQuery({
+    queryKey: queryKeys.home.detail(
+      DEFAULT_LOCATION.lat,
+      DEFAULT_LOCATION.lon,
+    ),
+    enabled: isReady,
+    queryFn: async () => {
+      // 최초 조회와 사용자의 새로고침에서만 활동을 동기화한다.
       await syncActivity(createDemoActivitySyncPayload());
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["activity"] }),
-        queryClient.invalidateQueries({ queryKey: ["mission"] }),
-        queryClient.invalidateQueries({ queryKey: ["goal", "weekly"] }),
-        queryClient.invalidateQueries({ queryKey: ["user", "mypage"] }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.activity.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.mission.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.goal.weekly }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.all }),
       ]);
-      const response = await getHome(DEFAULT_LOCATION);
-      setData(response.data.data);
-    } catch (error) {
-      console.error("Failed to load home data.", error);
-      setErrorMessage("홈 정보를 불러오지 못했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [queryClient]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!isReady) return;
-      void loadHome();
-    }, [isReady, loadHome]),
-  );
+      return getHome(DEFAULT_LOCATION);
+    },
+  });
 
   return {
-    data,
-    errorMessage,
-    isLoading,
-    reload: loadHome,
+    data: homeQuery.data ?? null,
+    errorMessage: homeQuery.isError
+      ? getApiErrorMessage(homeQuery.error, "홈 정보를 불러오지 못했습니다.")
+      : null,
+    isLoading: !isReady || homeQuery.isFetching,
+    reload: () => homeQuery.refetch(),
   };
 };

@@ -37,6 +37,7 @@ const initialGoal: GoalPayload = {
   availableTime: 0,
 };
 
+// 목표 설정 화면들의 입력, 추천 요청, 단계 이동을 한곳에서 관리한다.
 export const useGoalDetailFlow = () => {
   const [selectedId, setSelectedId] = useState(0);
   const [goal, setGoal] = useState<GoalPayload>(initialGoal);
@@ -53,33 +54,42 @@ export const useGoalDetailFlow = () => {
     setGoal((previous) => ({ ...previous, ...goalPlan }));
   };
 
-  const requestScenesByProfile = async () => {
-    if (!ENABLE_ONBOARDING_API) return;
-
-    const response = await recommendScenesByProfile();
-    const recommendedScenes = response.data.data.scenes;
-    const mainScene =
-      recommendedScenes.find((scene) => scene.sceneId === "main") ?? null;
-
-    setScenes(recommendedScenes);
-    setSelectedScene(mainScene);
-    if (mainScene) {
-      setGoal((previous) => ({ ...previous, scene: mainScene.scene }));
+  const runSubmittingAction = async (
+    action: Exclude<GoalSubmittingAction, null>,
+    task: () => Promise<void>,
+    fallbackMessage: string,
+  ) => {
+    try {
+      setSubmittingAction(action);
+      setIsSubmitting(true);
+      setErrorMessage(null);
+      await task();
+      return true;
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, fallbackMessage));
+      return false;
+    } finally {
+      setSubmittingAction(null);
+      setIsSubmitting(false);
     }
   };
 
-  const requestScenesByPlan = async () => {
+  const requestScenes = async (source: "profile" | "plan") => {
     if (!ENABLE_ONBOARDING_API) return;
 
-    const response = await recommendScenesByPlan({
-      payload: {
-        targetDistance: goal.targetDistance,
-        targetPeriod: goal.targetPeriod,
-        weeklyFrequency: goal.weeklyFrequency,
-        availableTime: goal.availableTime,
-      },
-    });
-    const recommendedScenes = response.data.data.scenes;
+    const response =
+      source === "profile"
+        ? await recommendScenesByProfile()
+        : await recommendScenesByPlan({
+            payload: {
+              targetDistance: goal.targetDistance,
+              targetPeriod: goal.targetPeriod,
+              weeklyFrequency: goal.weeklyFrequency,
+              availableTime: goal.availableTime,
+            },
+          });
+    const recommendedScenes = response.scenes;
+    // 서버가 대표로 지정한 main 장면을 초기 선택값으로 사용한다.
     const mainScene =
       recommendedScenes.find((scene) => scene.sceneId === "main") ?? null;
 
@@ -91,6 +101,7 @@ export const useGoalDetailFlow = () => {
   };
 
   const handleChooseNext = async () => {
+    // 직접 입력은 추천 API 없이 폼으로, 맞춤 추천은 프로필 기반 장면으로 분기한다.
     if (selectedId === 2) {
       setStep("Form");
       return;
@@ -98,32 +109,24 @@ export const useGoalDetailFlow = () => {
 
     if (selectedId !== 1) return;
 
-    try {
-      setSubmittingAction("choose");
-      setIsSubmitting(true);
-      setErrorMessage(null);
-      await requestScenesByProfile();
+    const isSuccessful = await runSubmittingAction(
+      "choose",
+      () => requestScenes("profile"),
+      "추천 장면을 불러오지 못했습니다.",
+    );
+    if (isSuccessful) {
       setStep("Scene");
-    } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "추천 장면을 불러오지 못했습니다."));
-    } finally {
-      setSubmittingAction(null);
-      setIsSubmitting(false);
     }
   };
 
   const handleFormNext = async () => {
-    try {
-      setSubmittingAction("form");
-      setIsSubmitting(true);
-      setErrorMessage(null);
-      await requestScenesByPlan();
+    const isSuccessful = await runSubmittingAction(
+      "form",
+      () => requestScenes("plan"),
+      "추천 장면을 불러오지 못했습니다.",
+    );
+    if (isSuccessful) {
       setStep("Scene");
-    } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "추천 장면을 불러오지 못했습니다."));
-    } finally {
-      setSubmittingAction(null);
-      setIsSubmitting(false);
     }
   };
 
@@ -139,6 +142,7 @@ export const useGoalDetailFlow = () => {
   };
 
   const handleSceneNext = async () => {
+    // 직접 입력한 수치는 이미 goal에 있으므로 바로 최종 확인 단계로 이동한다.
     if (selectedId === 2) {
       setStep("Summary");
       return;
@@ -151,67 +155,48 @@ export const useGoalDetailFlow = () => {
 
     if (!selectedScene) return;
 
-    try {
-      setSubmittingAction("sceneNext");
-      setIsSubmitting(true);
-      setErrorMessage(null);
-      const response = await recommendPlan({ payload: selectedScene });
-      const plan = response.data.data;
-
-      setGoal((previous) => ({
-        ...previous,
-        scene: selectedScene.scene,
-        targetDistance: plan.targetDistance,
-        targetPeriod: plan.targetPeriod,
-        weeklyFrequency: plan.weeklyFrequency,
-        availableTime: plan.availableTime,
-      }));
+    const isSuccessful = await runSubmittingAction(
+      "sceneNext",
+      async () => {
+        const plan = await recommendPlan({ payload: selectedScene });
+        setGoal((previous) => ({
+          ...previous,
+          scene: selectedScene.scene,
+          targetDistance: plan.targetDistance,
+          targetPeriod: plan.targetPeriod,
+          weeklyFrequency: plan.weeklyFrequency,
+          availableTime: plan.availableTime,
+        }));
+      },
+      "추천 목표를 불러오지 못했습니다.",
+    );
+    if (isSuccessful) {
       setStep("Adjust");
-    } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "추천 목표를 불러오지 못했습니다."));
-    } finally {
-      setSubmittingAction(null);
-      setIsSubmitting(false);
     }
   };
 
   const handleRefreshScenes = async () => {
-    try {
-      setSubmittingAction("refresh");
-      setIsSubmitting(true);
-      setErrorMessage(null);
-      if (selectedId === 1) {
-        await requestScenesByProfile();
-      } else {
-        await requestScenesByPlan();
-      }
-    } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "추천 장면을 새로 불러오지 못했습니다."));
-    } finally {
-      setSubmittingAction(null);
-      setIsSubmitting(false);
-    }
+    await runSubmittingAction(
+      "refresh",
+      () => requestScenes(selectedId === 1 ? "profile" : "plan"),
+      "추천 장면을 새로 불러오지 못했습니다.",
+    );
   };
 
   const submitGoal = async () => {
     if (!ENABLE_ONBOARDING_API) return true;
 
-    try {
-      setSubmittingAction("submit");
-      setIsSubmitting(true);
-      setErrorMessage(null);
-      await saveFutureGoal({ payload: goal });
-      return true;
-    } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "미래 목표를 저장하지 못했습니다."));
-      return false;
-    } finally {
-      setSubmittingAction(null);
-      setIsSubmitting(false);
-    }
+    return runSubmittingAction(
+      "submit",
+      async () => {
+        await saveFutureGoal({ payload: goal });
+      },
+      "미래 목표를 저장하지 못했습니다.",
+    );
   };
 
   const goBack = () => {
+    // 요청 중 화면 이탈을 막아 응답이 이전 단계의 상태를 덮어쓰지 않게 한다.
     if (isSubmitting) return true;
 
     if (step === "Choose") return false;

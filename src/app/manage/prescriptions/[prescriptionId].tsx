@@ -9,117 +9,21 @@ import SkinAnalysisScreen, {
   type SelectedImage,
 } from "@/components/manage/skin-analysis";
 import SkinResultScreen from "@/components/manage/skin-result";
-import StatProgressBar from "@/components/manage/stat-progress-bar";
+import {
+  SkinPrescriptionContent,
+  StretchingPrescriptionContent,
+} from "@/components/manage/prescription-detail-content";
 import LoadingScreen from "@/components/shared/loading";
 import StepScreenLayout from "@/components/shared/step-screen-layout";
 import Button from "@/components/ui/Button";
 import type {
   PrescriptionCategory,
-  SkinDetail,
-  StretchingDetail,
 } from "@/types/wellness";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { isAxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
-import { Image, Linking, ScrollView, Text, View } from "react-native";
-
-const SKIN_METRICS: Array<{ key: keyof SkinDetail; label: string }> = [
-  { key: "redness", label: "홍조" },
-  { key: "oiliness", label: "유분" },
-  { key: "texture", label: "피부결" },
-  { key: "pores", label: "모공" },
-  { key: "blemishes", label: "잡티" },
-  { key: "hydration", label: "보습" },
-  { key: "pigment", label: "색소침착" },
-];
-
-const getYoutubeThumbnail = (url: string) => {
-  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&/]+)/);
-  return match?.[1] ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
-};
-
-function SkinContent({ detail }: { detail: SkinDetail }) {
-  return (
-    <View>
-      <Text className="mt-3 text-[20px] font-semibold text-neutral-950">
-        데일리 피부 진단
-      </Text>
-      <Text className="mt-2 text-[13px] font-medium text-neutral-300">
-        {detail.description}
-      </Text>
-      <View className="mt-7 gap-6">
-        {SKIN_METRICS.map(({ key, label }) => {
-          const score = Number(detail[key]);
-          return (
-            <View key={key}>
-              <Text className="text-[14px] font-medium text-neutral-500">
-                {label}
-              </Text>
-              <View className="mt-3">
-                <StatProgressBar progress={score} accessibilityLabel={`${label} ${score}점`} />
-              </View>
-              <Text className="mt-2 self-end text-[12px] font-medium text-neutral-500">
-                {score}점
-              </Text>
-            </View>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
-
-function StretchingContent({ detail }: { detail: StretchingDetail }) {
-  const video = detail.recoveryVideos?.[0];
-  const videoUrl = video?.videoUrl || detail.recommendedLink;
-  const thumbnail = videoUrl ? getYoutubeThumbnail(videoUrl) : null;
-
-  return (
-    <View>
-      <Text className="mt-3 text-[20px] font-semibold leading-8 text-neutral-950">
-        {video?.title ?? "오늘 무리한 근육을 위한 회복 스트레칭"}
-      </Text>
-      {thumbnail ? (
-        <View className="mt-5 overflow-hidden rounded-[22px] bg-neutral-100">
-          <Image source={{ uri: thumbnail }} className="h-55 w-full" resizeMode="cover" />
-        </View>
-      ) : null}
-      {videoUrl ? (
-        <View className="mt-4">
-          <Button isWhite onPress={() => Linking.openURL(videoUrl)}>
-            추천 영상 재생하기
-          </Button>
-        </View>
-      ) : null}
-      <Text className="mt-7 text-[18px] font-semibold text-neutral-950">
-        AI 영상 추천
-      </Text>
-      <View className="mt-4 rounded-[20px] border border-primary-440 bg-white px-5 py-5">
-        <Text className="text-[13px] font-medium leading-6 text-neutral-500">
-          {detail.description}
-        </Text>
-        {detail.steps?.map((step, index) => (
-          <View key={`${step.label}-${index}`} className="mt-5">
-            <View className="self-start rounded-lg bg-primary-200 px-3 py-1">
-              <Text className="text-[10px] font-semibold text-white">
-                {step.label}
-              </Text>
-            </View>
-            <Text className="mt-2 text-[13px] font-medium leading-6 text-neutral-500">
-              {step.description}
-            </Text>
-          </View>
-        ))}
-        {video?.recommendationReason ? (
-          <Text className="mt-5 text-[13px] font-medium leading-6 text-neutral-500">
-            {video.recommendationReason}
-          </Text>
-        ) : null}
-      </View>
-    </View>
-  );
-}
+import { ScrollView, Text, View } from "react-native";
+import { queryKeys } from "@/lib/query-keys";
 
 export default function PrescriptionDetailScreen() {
   const params = useLocalSearchParams<{ prescriptionId: string }>();
@@ -129,7 +33,7 @@ export default function PrescriptionDetailScreen() {
   const afterCareUploadLockRef = useRef(false);
   const completionStartedRef = useRef(false);
   const detailQuery = useQuery({
-    queryKey: ["wellness", "prescription", prescriptionId],
+    queryKey: queryKeys.wellness.prescription(prescriptionId),
     queryFn: () => getPrescriptionDetail(prescriptionId),
     enabled: Number.isInteger(prescriptionId) && prescriptionId > 0,
   });
@@ -148,8 +52,8 @@ export default function PrescriptionDetailScreen() {
       }),
     onSuccess: async () => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["wellness", "prescriptions"] }),
-        queryClient.invalidateQueries({ queryKey: ["user", "mypage"] }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.wellness.prescriptions }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.all }),
       ]);
     },
   });
@@ -162,7 +66,7 @@ export default function PrescriptionDetailScreen() {
       return record;
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["user", "mypage"] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
     },
     onSettled: () => {
       afterCareUploadLockRef.current = false;
@@ -170,18 +74,22 @@ export default function PrescriptionDetailScreen() {
   });
   const afterCareDate = afterCareMutation.data?.measuredDate;
   const comparisonQuery = useQuery({
-    queryKey: ["wellness", "skin", "comparison", afterCareDate],
-    queryFn: () => getSkinComparison(afterCareDate!),
+    queryKey: queryKeys.wellness.skinComparison(afterCareDate),
+    queryFn: () => {
+      if (!afterCareDate) {
+        throw new Error("After-care date has not been loaded.");
+      }
+      return getSkinComparison(afterCareDate);
+    },
     enabled: Boolean(afterCareDate),
   });
   const isComparisonNotFound =
-    (comparisonQuery.error instanceof ApiError &&
-      comparisonQuery.error.status === 404) ||
-    (isAxiosError(comparisonQuery.error) &&
-      comparisonQuery.error.response?.status === 404);
+    comparisonQuery.error instanceof ApiError &&
+    comparisonQuery.error.status === 404;
 
   const detail = detailQuery.data;
   const completedSkinResult =
+    // 비교할 전날 기록이 없는 404는 실패가 아니라 오늘 측정값만 보여주는 정상 분기다.
     comparisonQuery.data?.type === "AFTER_CARE"
       ? comparisonQuery.data
       : isComparisonNotFound
@@ -189,6 +97,7 @@ export default function PrescriptionDetailScreen() {
         : null;
 
   useEffect(() => {
+    // 관리 후 분석 결과가 화면에 준비된 시점에 피부 처방 완료를 한 번만 저장한다.
     if (
       !detail ||
       detail.category !== "SKIN" ||
@@ -212,6 +121,7 @@ export default function PrescriptionDetailScreen() {
   }, [completedSkinResult, detail, isAfterCareScan]);
 
   const completeCare = () => {
+    // 피부 처방은 완료 전에 AFTER_CARE 측정이 필수이고, 스트레칭은 즉시 완료할 수 있다.
     if (!detail?.completionSupported || detail.category === "NUTRITION") {
       router.back();
       return;
@@ -234,6 +144,7 @@ export default function PrescriptionDetailScreen() {
   };
 
   const submitAfterCareImage = (image: SelectedImage) => {
+    // mutation의 isPending 반영 전 연속 탭까지 ref 잠금으로 방어한다.
     if (afterCareUploadLockRef.current || afterCareMutation.isPending) return;
 
     afterCareUploadLockRef.current = true;
@@ -258,6 +169,7 @@ export default function PrescriptionDetailScreen() {
         onBack={handleBack}
         edges={["left", "right"]}
       >
+        {/* 처방전 로딩·오류 상태 */}
         {detailQuery.isLoading ? (
           <LoadingScreen
             title="맞춤 처방전을 준비하고 있어요."
@@ -277,6 +189,7 @@ export default function PrescriptionDetailScreen() {
             </Button>
           </View>
         ) : detail.category === "SKIN" && isAfterCareScan ? (
+          /* 관리 후 피부 측정 및 비교 결과 */
           completedSkinResult ? (
             <SkinResultScreen result={completedSkinResult} />
           ) : afterCareDate ? (
@@ -320,15 +233,16 @@ export default function PrescriptionDetailScreen() {
           )
         ) : (
           <View className="flex-1">
+            {/* 카테고리별 처방 상세 */}
             <ScrollView
               className="flex-1"
               contentContainerStyle={{ paddingBottom: 28 }}
               showsVerticalScrollIndicator={false}
             >
               {detail.category === "SKIN" && detail.skinDetail ? (
-                <SkinContent detail={detail.skinDetail} />
+                <SkinPrescriptionContent detail={detail.skinDetail} />
               ) : detail.category === "STRETCH" && detail.stretchingDetail ? (
-                <StretchingContent detail={detail.stretchingDetail} />
+                <StretchingPrescriptionContent detail={detail.stretchingDetail} />
               ) : (
                 <View>
                   <Text className="mt-3 text-[20px] font-semibold text-neutral-950">
@@ -357,6 +271,7 @@ export default function PrescriptionDetailScreen() {
               )}
             </ScrollView>
 
+            {/* 처방 완료 버튼 */}
             {completionMutation.isError ? (
               <Text className="mb-3 text-center text-[12px] text-error">
                 {getApiErrorMessage(completionMutation.error, "완료 상태를 저장하지 못했습니다.")}

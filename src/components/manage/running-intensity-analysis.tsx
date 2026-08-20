@@ -65,6 +65,7 @@ function IntensityGauge({ intensity }: { intensity: RunningIntensity }) {
       style={{ height: gaugeHeight + 30 }}
       accessibilityLabel={`오늘의 러닝 강도: ${LEVEL_LABEL[intensity.level]}, ${intensity.score}점`}
     >
+      {/* 강도 구간에 맞춰 고양이 위치를 이동한다. */}
       <Image
         source={require("../../../assets/images/character/lying-pink-cat.png")}
         className="absolute z-10 h-14 w-23"
@@ -107,14 +108,17 @@ export default function RunningIntensityAnalysis({
     >
       <View className="flex-1 justify-between gap-8">
         <View>
+          {/* 타이틀 */}
           <Text className="mt-3 text-[20px] font-semibold text-neutral-950">
             오늘의 러닝 강도 분석
           </Text>
 
+          {/* 러닝 강도 게이지 */}
           <View className="mt-6">
             <IntensityGauge intensity={intensity} />
           </View>
 
+          {/* 강도 분석 피드백 */}
           <View className="mt-7 flex-row gap-3 rounded-[20px] border border-primary-440 bg-white px-4 py-5 shadow-[0_2px_4px_rgba(0,0,0,0.08)]">
             <View className="pt-0.5">
               <WarningIcon />
@@ -136,6 +140,7 @@ export default function RunningIntensityAnalysis({
           </View>
         </View>
 
+        {/* 버튼 */}
         <Button onPress={onPressReport}>웰니스 리포트 받기</Button>
       </View>
     </ScrollView>

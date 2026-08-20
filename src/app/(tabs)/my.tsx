@@ -11,11 +11,12 @@ import { getMyStats } from "@/apis/user";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { getApiErrorMessage } from "@/apis";
 import Button from "@/components/ui/Button";
+import { queryKeys } from "@/lib/query-keys";
 
 export default function MyScreen() {
   const isReady = useProfileStore((state) => state.isUserIdInitialized);
   const statsQuery = useQuery({
-    queryKey: ["user", "mypage", "stats-v2"],
+    queryKey: queryKeys.user.myPage,
     queryFn: getMyStats,
     enabled: isReady,
     staleTime: 0,
@@ -74,13 +75,17 @@ export default function MyScreen() {
             마이페이지
           </Text>
 
+          {/* 프로필과 목표 칼로리 */}
           <ProfileSection nickname={stats.nickname} burnedCalories={stats.burnedCalories} totalCalories={stats.totalCalories} />
           <SectionDivider />
+          {/* 이번 주 미션 달성 현황 */}
           <WeeklyMissionSection successCount={stats.weeklyMission.successCount} successDays={stats.weeklyMission.successDays} />
           <SectionDivider />
+          {/* 컨디션·피부·스트레칭 사후관리 현황 */}
           <CareStatusSection conditionRate={stats.postCare.conditionRate} skinRate={stats.postCare.skinRate} stretchRate={stats.postCare.stretchRate} feedback={stats.postCare.weeklyFeedback} />
           <SectionDivider />
 
+          {/* 월간 피부 점수 추이 */}
           <MonthlySkinScoreSection scores={stats.monthlySkinScore} />
         </ScrollView>
       </GradientScreenLayout>

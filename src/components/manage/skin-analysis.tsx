@@ -48,6 +48,7 @@ export default function SkinAnalysisScreen({
 
   return (
     <View className="flex-1 w-full items-center px-8 pt-8 pb-5">
+      {/* 타이틀 */}
       <View className="gap-2">
         <Text className="text-center text-[20px] font-semibold text-black">
           얼굴이 잘 나온 사진을 선택해 주세요.
@@ -58,6 +59,7 @@ export default function SkinAnalysisScreen({
         </Text>
       </View>
 
+      {/* 피부 이미지 선택 및 미리보기 */}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={
@@ -91,6 +93,7 @@ export default function SkinAnalysisScreen({
         </Text>
       )}
 
+      {/* 버튼 */}
       <View className="mt-auto w-full gap-3 pt-5">
         <Button
           disabled={!selectedImage}

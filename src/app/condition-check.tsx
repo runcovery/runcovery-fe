@@ -12,6 +12,12 @@ import { analyzeCondition } from "@/apis/condition";
 import { getApiErrorMessage } from "@/apis";
 import type { BodyCondition, SleepQuality } from "@/types/condition";
 import { router } from "expo-router";
+import { queryKeys } from "@/lib/query-keys";
+import {
+  BODY_CONDITION_BY_OPTION,
+  SLEEP_QUALITY_BY_OPTION,
+  type SurveyOptionId,
+} from "@/constants/survey-options";
 
 type StepType = "body" | "sleep" | "pain" | "loading";
 
@@ -50,9 +56,11 @@ export default function ConditionCheckScreen() {
   const conditionMutation = useMutation({
     mutationFn: analyzeCondition,
     onSuccess: (condition) => {
-      queryClient.setQueryData(["condition", "latest"], condition);
-      void queryClient.invalidateQueries({ queryKey: ["mission"] });
-      void queryClient.invalidateQueries({ queryKey: ["user", "mypage"] });
+      // 저장 응답을 즉시 캐시에 반영해 컨디션 탭의 중복 조회를 줄인다.
+      queryClient.setQueryData(queryKeys.condition.latest, condition);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.mission.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.home.all });
       if (!shouldHandleMutationResultRef.current) return;
       router.replace("/(tabs)/condition");
     },
@@ -66,6 +74,7 @@ export default function ConditionCheckScreen() {
   const handleBodyCheckNext = (parts: BodyPartId[]) => {
     if (!bodyCondition || !sleepQuality || submitLockRef.current) return;
 
+    // 빠른 연속 탭으로 동일한 컨디션 기록이 중복 생성되는 것을 막는다.
     submitLockRef.current = true;
     shouldHandleMutationResultRef.current = true;
     setSelectedBodyParts(parts);
@@ -79,11 +88,21 @@ export default function ConditionCheckScreen() {
 
   const selectedValue = step === "body" ? bodyCondition : sleepQuality;
   const selectValue = (id: number) => {
+    if (id !== 1 && id !== 2 && id !== 3) return;
+
     if (step === "body") {
-      setBodyCondition(({ 1: "EXHAUSTED", 2: "FAIR", 3: "GOOD" } as const)[id as 1 | 2 | 3]);
+      setBodyCondition(BODY_CONDITION_BY_OPTION[id]);
     } else {
-      setSleepQuality(({ 1: "GOOD", 2: "FAIR", 3: "POOR" } as const)[id as 1 | 2 | 3]);
+      setSleepQuality(SLEEP_QUALITY_BY_OPTION[id]);
     }
+  };
+
+  const getOptionValue = (id: number) => {
+    if (id !== 1 && id !== 2 && id !== 3) return null;
+    const optionId: SurveyOptionId = id;
+    return step === "body"
+      ? BODY_CONDITION_BY_OPTION[optionId]
+      : SLEEP_QUALITY_BY_OPTION[optionId];
   };
 
   const handleBack = () => {
@@ -93,6 +112,7 @@ export default function ConditionCheckScreen() {
     }
 
     if (step === "loading") {
+      // 요청은 계속 두되 사용자가 뒤로 간 경우 완료 콜백의 자동 이동만 무시한다.
       shouldHandleMutationResultRef.current = false;
       setStep("pain");
       return;
@@ -118,26 +138,27 @@ export default function ConditionCheckScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View>
+              {/* 타이틀 */}
               <TitleSection
                 title={checkData[step].title}
                 subTitle={checkData[step].subTitle}
               />
 
+              {/* 컨디션 선택 리스트 */}
               <View className="gap-9 mt-7">
                 {checkData[step].list.map((item) => (
                   <OptionCard
                     key={item.id}
                     py="py-6"
                     content={item.content}
-                    selected={selectedValue === (step === "body"
-                      ? ({ 1: "EXHAUSTED", 2: "FAIR", 3: "GOOD" } as const)[item.id]
-                      : ({ 1: "GOOD", 2: "FAIR", 3: "POOR" } as const)[item.id])}
+                    selected={selectedValue === getOptionValue(item.id)}
                     onPress={() => selectValue(item.id)}
                   />
                 ))}
               </View>
             </View>
 
+            {/* 버튼 */}
             <View>
               <Button
                 disabled={!selectedValue}
@@ -151,6 +172,7 @@ export default function ConditionCheckScreen() {
             </View>
           </ScrollView>
         )}
+        {/* 통증 부위 선택 */}
         {step === "pain" && (
           <BodyCheckStep
             selectedParts={selectedBodyParts}
@@ -158,6 +180,7 @@ export default function ConditionCheckScreen() {
             onNext={handleBodyCheckNext}
           />
         )}
+        {/* 컨디션 분석 로딩 */}
         {step === "loading" && (
           <LoadingScreen
             title="컨디션을 분석하고 있어요."

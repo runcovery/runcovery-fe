@@ -11,14 +11,15 @@ import type {
 export const createUser = async ({
   payload,
 }: ApiPayload<UserCreatePayload>) => {
-  const res = await publicApi.post<ApiResponse<UserCreateResponse>>(
+  const { data } = await publicApi.post<ApiResponse<UserCreateResponse>>(
     "/users",
     payload,
   );
 
-  return res;
+  return data.data;
 };
 
+// 마이페이지 통계 조회
 export const getMyStats = async () => {
   const { data } = await api.get<ApiResponse<MyStatsResponse>>("/users/mypage");
   return data.data;

@@ -24,11 +24,13 @@ export default function DailyGoalCard({
 }) {
   return (
     <View>
+      {/* 카드 타이틀 */}
       <Text className="text-[14px] font-semibold text-black ml-4">
         일일 목표
       </Text>
       <View className="mt-3">
         <OutlineCard py="py-5">
+          {/* 오늘의 추천 강도 */}
           <Label text="일일 미션" bg="bg-secondary-400" />
           <Text className="text-[14px] font-semibold text-black mt-2 ml-4 text-center">
             {mission?.isRest
@@ -36,6 +38,7 @@ export default function DailyGoalCard({
               : (mission?.recommendedIntensity ??
                 "오늘의 미션을 받으려면 컨디션 체크를 \n받아야해요")}
           </Text>
+          {/* 시간·심박 구간·상세 안내 */}
           <View className="mt-3 gap-3">
             {mission ? (
               <>

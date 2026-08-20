@@ -1,7 +1,7 @@
 import { getApiErrorMessage } from "@/apis";
 import { getTodayActivity, syncActivity } from "@/apis/activity";
 import { generateReport, getReportPreview, scanSkin } from "@/apis/wellness";
-import { BodyCheckStep, BodyPartId } from "@/components/body-check";
+import { BodyCheckStep } from "@/components/body-check";
 import CareCheckStepScreen from "@/components/manage/care-check-step";
 import ManageSummaryScreen from "@/components/manage/manage-summary";
 import RunningIntensityAnalysis from "@/components/manage/running-intensity-analysis";
@@ -10,18 +10,30 @@ import WellnessReport from "@/components/manage/wellness-report";
 import StepScreenLayout from "@/components/shared/step-screen-layout";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { createDemoActivitySyncPayload } from "@/lib/activity-sync";
-import { StepType } from "@/types/careStep";
-import type { ReportSurvey } from "@/types/wellness";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { View } from "react-native";
 import LoadingScreen from "../../components/shared/loading";
+import { queryKeys } from "@/lib/query-keys";
+import {
+  isCompleteReportSurvey,
+  PREVIOUS_CARE_STEP,
+  useManageFlow,
+} from "@/hooks/manage/useManageFlow";
 
 export default function ManageScreen() {
-  const [step, setStep] = useState<StepType>("skin");
-  const [selectedBodyParts, setSelectedBodyParts] = useState<BodyPartId[]>([]);
-  const [survey, setSurvey] = useState<Partial<ReportSurvey>>({});
+  const {
+    handleBodyCheckNext,
+    handleSurveyNext,
+    handleSurveySelect,
+    selectedBodyParts,
+    selectedSurveyId,
+    setSelectedBodyParts,
+    setStep,
+    step,
+    survey,
+  } = useManageFlow();
   const isReady = useProfileStore((state) => state.isUserIdInitialized);
   const queryClient = useQueryClient();
   const skinUploadLockRef = useRef(false);
@@ -29,17 +41,24 @@ export default function ManageScreen() {
   const shouldHandleReportResultRef = useRef(true);
 
   const activityQuery = useQuery({
-    queryKey: ["activity", "today"],
+    queryKey: queryKeys.activity.today,
     queryFn: getTodayActivity,
     enabled: isReady && step === "summary",
   });
+  const activityRecordId = activityQuery.data?.recordId;
   const previewQuery = useQuery({
-    queryKey: ["wellness", "preview", activityQuery.data?.recordId],
-    queryFn: () => getReportPreview(activityQuery.data!.recordId),
-    enabled: step === "summary" && Boolean(activityQuery.data?.recordId),
+    queryKey: queryKeys.wellness.preview(activityRecordId),
+    queryFn: () => {
+      if (!activityRecordId) {
+        throw new Error("Activity record ID has not been loaded.");
+      }
+      return getReportPreview(activityRecordId);
+    },
+    enabled: step === "summary" && Boolean(activityRecordId),
   });
   const activitySyncMutation = useMutation({
     mutationFn: async () => {
+      // 활동 동기화 직후 서버 기준의 활동과 리포트 미리보기를 함께 다시 받는다.
       const synced = await syncActivity(createDemoActivitySyncPayload());
       const [activity, preview] = await Promise.all([
         getTodayActivity(),
@@ -48,15 +67,17 @@ export default function ManageScreen() {
       return { activity, preview };
     },
     onSuccess: async ({ activity, preview }) => {
-      queryClient.setQueryData(["activity", "today"], activity);
+      // 같은 기록을 사용하는 화면들이 추가 요청 없이 최신 값을 읽도록 캐시를 맞춘다.
+      queryClient.setQueryData(queryKeys.activity.today, activity);
       queryClient.setQueryData(
-        ["wellness", "preview", activity.recordId],
+        queryKeys.wellness.preview(activity.recordId),
         preview,
       );
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["mission"] }),
-        queryClient.invalidateQueries({ queryKey: ["goal", "weekly"] }),
-        queryClient.invalidateQueries({ queryKey: ["user", "mypage"] }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.mission.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.goal.weekly }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.home.all }),
       ]);
     },
   });
@@ -64,9 +85,10 @@ export default function ManageScreen() {
     mutationFn: generateReport,
     onSuccess: () => {
       void queryClient.invalidateQueries({
-        queryKey: ["wellness", "prescriptions"],
+        queryKey: queryKeys.wellness.prescriptions,
       });
-      void queryClient.invalidateQueries({ queryKey: ["user", "mypage"] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.home.all });
       if (!shouldHandleReportResultRef.current) return;
       setStep("intensity");
     },
@@ -87,7 +109,7 @@ export default function ManageScreen() {
       return record;
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["user", "mypage"] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
       setStep("running");
     },
     onSettled: () => {
@@ -96,18 +118,8 @@ export default function ManageScreen() {
   });
   const isCheck = step === "running" || step === "energy" || step === "sweat";
 
-  const handleNext = () => {
-    if (step === "running") setStep("energy");
-    if (step === "energy") setStep("sweat");
-    if (step === "sweat") setStep("pain");
-  };
-
-  const handleBodyCheckNext = (parts: BodyPartId[]) => {
-    setSelectedBodyParts(parts);
-    setStep("summary");
-  };
-
   const startReportLoading = () => {
+    // 이미 생성된 결과가 있으면 뒤로 갔다 돌아와도 리포트를 중복 생성하지 않는다.
     if (reportMutation.data) {
       shouldHandleReportResultRef.current = true;
       setStep("intensity");
@@ -118,18 +130,17 @@ export default function ManageScreen() {
       reportGenerationLockRef.current ||
       reportMutation.isPending ||
       !previewQuery.data ||
-      !survey.feeling ||
-      !survey.energy ||
-      !survey.sweat
+      !isCompleteReportSurvey(survey)
     )
       return;
+    // mutation 상태가 갱신되기 전의 짧은 구간도 ref 잠금으로 중복 탭을 차단한다.
     reportGenerationLockRef.current = true;
     shouldHandleReportResultRef.current = true;
     setStep("loading");
     reportMutation.mutate({
       recordDate: previewQuery.data.recordDate,
       activityRecordId: previewQuery.data.activityRecordId,
-      survey: survey as ReportSurvey,
+      survey,
       painPartCodes: selectedBodyParts,
     });
   };
@@ -145,39 +156,6 @@ export default function ManageScreen() {
     skinMutation.mutate(image);
   };
 
-  const handleSurveySelect = (id: number) => {
-    if (step === "running")
-      setSurvey((value) => ({
-        ...value,
-        feeling: ({ 1: "GREAT", 2: "NORMAL", 3: "EXHAUSTED" } as const)[
-          id as 1 | 2 | 3
-        ],
-      }));
-    if (step === "energy")
-      setSurvey((value) => ({
-        ...value,
-        energy: ({ 1: "DEPLETED", 2: "TIRED", 3: "ENERGETIC" } as const)[
-          id as 1 | 2 | 3
-        ],
-      }));
-    if (step === "sweat")
-      setSurvey((value) => ({
-        ...value,
-        sweat: ({ 1: "LOW", 2: "MODERATE", 3: "HIGH" } as const)[
-          id as 1 | 2 | 3
-        ],
-      }));
-  };
-
-  const selectedSurveyId =
-    step === "running"
-      ? ({ GREAT: 1, NORMAL: 2, EXHAUSTED: 3 } as const)[survey.feeling!]
-      : step === "energy"
-        ? ({ DEPLETED: 1, TIRED: 2, ENERGETIC: 3 } as const)[survey.energy!]
-        : step === "sweat"
-          ? ({ LOW: 1, MODERATE: 2, HIGH: 3 } as const)[survey.sweat!]
-          : undefined;
-
   const handleBack = () => {
     if (step === "skin") {
       router.back();
@@ -185,21 +163,13 @@ export default function ManageScreen() {
     }
 
     if (step === "loading") {
+      // 생성 요청은 취소하지 않고, 완료 후 강제 화면 전환만 막는다.
       shouldHandleReportResultRef.current = false;
       setStep("summary");
       return;
     }
 
-    const previousStep: Partial<Record<StepType, StepType>> = {
-      running: "skin",
-      energy: "running",
-      sweat: "energy",
-      pain: "sweat",
-      summary: "pain",
-      intensity: "summary",
-      report: "intensity",
-    };
-    const previous = previousStep[step];
+    const previous = PREVIOUS_CARE_STEP[step];
 
     if (previous) {
       if (step === "summary") reportMutation.reset();
@@ -217,14 +187,16 @@ export default function ManageScreen() {
           step === "report" ? { paddingBottom: 0 } : undefined
         }
       >
+        {/* 러닝 만족도·에너지·땀 설문 */}
         {isCheck && (
           <CareCheckStepScreen
             step={step}
-            onNext={handleNext}
+            onNext={handleSurveyNext}
             selectedId={selectedSurveyId}
             onSelect={handleSurveySelect}
           />
         )}
+        {/* 통증 부위 선택 */}
         {step === "pain" && (
           <BodyCheckStep
             selectedParts={selectedBodyParts}
@@ -232,6 +204,7 @@ export default function ManageScreen() {
             onNext={handleBodyCheckNext}
           />
         )}
+        {/* 활동 기록 요약 */}
         {step === "summary" &&
           (previewQuery.data ? (
             <ManageSummaryScreen
@@ -279,6 +252,7 @@ export default function ManageScreen() {
               text="러닝 기록을 불러오는 중이에요."
             />
           ))}
+        {/* 러닝 직후 피부 분석 */}
         {step === "skin" && (
           <SkinAnalysisScreen
             isLoading={skinMutation.isPending}
@@ -293,6 +267,7 @@ export default function ManageScreen() {
             onSubmit={handleAfterRunImageSubmit}
           />
         )}
+        {/* 웰니스 리포트 생성 로딩 */}
         {step === "loading" && (
           <LoadingScreen
             title="입력해 주신 컨디션과 러닝 데이터를 종합하여 맞춤형 회복 리포트를 작성하고 있습니다."
@@ -309,12 +284,14 @@ export default function ManageScreen() {
             onRetry={startReportLoading}
           />
         )}
-        {step === "intensity" && (
+        {/* 러닝 강도 분석 */}
+        {step === "intensity" && reportMutation.data && (
           <RunningIntensityAnalysis
-            intensity={reportMutation.data!.intensity}
+            intensity={reportMutation.data.intensity}
             onPressReport={() => setStep("report")}
           />
         )}
+        {/* 최종 웰니스 처방전 */}
         {step === "report" && reportMutation.data && (
           <WellnessReport report={reportMutation.data} />
         )}
